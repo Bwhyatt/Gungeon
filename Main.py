@@ -7,16 +7,12 @@ running = True
 dt = 0
 Theplayer = Player.player(100, (100, 100), (100,100))
 while running:
-    # poll for events
-    # pygame.QUIT event means the user clicked X to close your window
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
 
-    # fill the screen with a color to wipe away anything from last frame
     screen.fill("purple")
-    Theplayer.move(dt)
-    Theplayer.update()
+    Theplayer.update(screen, pygame.key.get_pressed(), dt, pygame.mouse.get_pos())
     Theplayer.draw(screen)
     pygame.display.flip()
 
