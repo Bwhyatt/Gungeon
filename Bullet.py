@@ -1,7 +1,7 @@
 import pygame
 import math
 class bullet:
-    def __init(self, size, shape, speed, mousepos, position):
+    def __init__(self, size, shape, speed, mousepos, position):
         self.size = size
         self.shape = shape
         self.speed = pygame.Vector2(speed)
@@ -11,14 +11,14 @@ class bullet:
         self.upX = 1 if mousepos[0] > self.pos[0] else -1
         self.dircounter = 0
     def determinedir(self, mousepos):
-        acute_rad = math.atan((mousepos[1] - self.pos[1]), (mousepos[0] - self.pos[0]))
+        acute_rad = math.atan2((mousepos[1] - self.pos[1]), (mousepos[0] - self.pos[0]))
         return acute_rad
     def move(self, speed, dt):
-        self.pos[0] += math.cos(self.acute_rad) * self.upX * speed * dt
-        self.pos[1] += math.sin(self.acute_rad) * self.upY * dt * speed
+        self.pos += pygame.Vector2(math.cos(self.acute_rad) * self.upX * speed * dt, math.sin(self.acute_rad) * self.upY * dt * speed)
     def draw(self, screen):
         pygame.draw.circle(screen, "white", self.pos, self.size)
     def update(self, dt, screen):
+        print("Hi im updating")
         if self.dircounter == 0:
             self.acute_rad = self.determinedir(self.mousepos)
             self.dircounter += 1
