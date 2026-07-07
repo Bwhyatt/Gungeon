@@ -1,19 +1,18 @@
 
 import pygame
-from Bullet import bullet
+import Gun
 class Realplayer:
     def __init__(self, speed, size, pos):
        self.speed = speed
        self.size = pygame.Vector2(size)
        self.pos = pygame.Vector2(pos)
-       self.bulletList = []
        self.rect = pygame.Rect( self.pos.x, self.pos.y, self.size[0], self.size[1])
        self.alive = True
+       self.gun = Gun.Gun((50, 20), "pistol", pygame.mouse.get_pos(), self.pos)
     def update(self, screen, keys, dt, mousepos):
         self.move(keys, dt, self.speed)
-        if pygame.mouse.get_pressed()[0]:
-        
-            self.shoot(mousepos)#for now keys will be passed in
+        self.gun.update(dt, screen, keys, self.pos, mousepos)# maybe put this in main loop idk
+        #for now keys will be passed in
         self.draw(screen)
         self.rect = pygame.Rect( self.pos.x, self.pos.y, self.size[0], self.size[1])
     def draw(self, screen):
@@ -27,10 +26,6 @@ class Realplayer:
             self.pos.x -= speed * dt
         if keys[pygame.K_d]:
             self.pos.x += speed * dt
-    def shoot(self, mousepos):
-        bullet1 = bullet(20, "circle", 500, mousepos, self.pos)
-        self.bulletList.append(bullet1)
         #size, shape, speed, mousepos, position
         #bullet angle is tan (y component on x component)
         #x position of bullet is incremented speed multiplied by cos component
-        pass

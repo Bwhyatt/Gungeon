@@ -14,7 +14,7 @@ while running:
             running = False
     screen.fill("purple")
     Theplayer.update(screen, pygame.key.get_pressed(), dt, pygame.mouse.get_pos())
-    for bullet in Theplayer.bulletList:
+    for bullet in Theplayer.gun.bulletList:
         bullet.update(dt, screen)
     Theplayer.draw(screen)
     pygame.display.flip()
