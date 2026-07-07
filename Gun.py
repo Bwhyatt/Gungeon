@@ -15,27 +15,31 @@ class Gun:
         self.capacity = 10
         self.reloadTime = 2
         self.fireRate = 0.5
-        self.timer = 0 # timer to basically act as firerate checker
+        self.fireratetimer = 0 # timer to basically act as firerate checker
         self.reloadpressed = False
         self.bulletList = []
-    
+
+        self.bulletsPershot = 1
+        self.spread = 0
+        #note to self: self spread will be angle in radians that will determine the angle of the sector
     def determinedir(self, mousepos):
         acute_rad = math.atan2((mousepos.y - self.pos.y), (mousepos.x - self.pos.x))
         return acute_rad
-    def CanShoot(self):
-        if self.ammo > 0 and self.timer <= 0:
+    def CanShoot(self, ammo, timer):
+        if ammo > 0 and timer <= 0:
             return True
         else:
             return False
-    def reload(self):
-        if self.ammo < self.capacity:
-            self.ammo = self.capacity
-        self.reloadpressed = False
+    def reload(self, ammo, capacity):
+        if ammo < capacity:
+            ammo = capacity
+            self.reloadpressed = False
+        self.reloadtimerr = self.reloadTime
     def shoot(self, mousepos):
-        if self.CanShoot():
+        if self.CanShoot(self.ammo, self.fireratetimer):
             print("shooting")
             self.ammo -= 1
-            self.timer = self.fireRate
+            self.fireratetimer = self.fireRate
             bullet1 = bullet(20, "circle", 500, mousepos, self.pos)
             self.bulletList.append(bullet1)
         else:
@@ -48,13 +52,15 @@ class Gun:
         if self.dircounter == 0:
             self.acute_rad = self.determinedir(self.mousepos)
             self.dircounter += 1
-        self.timer -= dt
+        self.fireratetimer -= dt
         if keys[pygame.K_r]:
             self.reloadpressed = True
+        #if they press it then the reload timer will be able to begin
+
         if(self.reloadpressed):
-            self.reloadtime -= dt
-            if self.reloadtime <= 0:
-                self.reload()
+            self.reloadtimer -= dt
+            if self.reloadtimer <= 0:
+                self.reload(self.ammo, self.capacity)
         
         if(pygame.mouse.get_pressed()[0]):
             self.shoot(mousepos)
