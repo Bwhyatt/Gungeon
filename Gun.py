@@ -27,31 +27,32 @@ class Gun:
         self.spread = 0
         #note to self: self spread will be angle in radians that will determine the angle of the sector
     def determinedir(self, mousepos):
-        acute_rad = math.atan((self.pos.y - mousepos.y )/(mousepos.x - self.pos.x))
+        acute_rad = math.atan2((self.pos.y - mousepos.y ) , (mousepos.x - self.pos.x))
         return acute_rad
     def CanShoot(self, ammo, timer):#checks if the firerate timer has gone off, not concerned with reload
         if ammo > 0 and timer <= 0:
             return True
         else:
-            print("timer is " + str(timer))
-            print("ammo is " + str(ammo))
+            #print("timer is " + str(timer))
+            #print("ammo is " + str(ammo))
             return False
     def reload(self, ammo, capacity):
         if ammo < capacity:
             ammo = capacity
             self.reloadpressed = False
-            print("reloaded")
+            #print("reloaded")
         self.reloadtimer = self.reloadTime
         return ammo
-    def shoot(self,position, mousepos):
+    def shoot(self,position, mousepos, damage):
         if self.CanShoot(self.ammo, self.fireratetimer):
-            print("shooting")
+            #print("shooting")
             self.ammo -= 1
             self.fireratetimer = self.fireRate
-            bullet1 = bullet(20, "circle", 500, mousepos, position)
+            bullet1 = bullet(20, "circle", 500, mousepos, position, damage)
             self.bulletList.append(bullet1)
         else:
-            print("cant shoot")
+            #print("cant shoot")
+            pass
     def draw(self, screen, size, position, mousepos):
         pygame.draw.rect(screen, "red", (position[0],position[1], size[0], size[1]))
     
@@ -71,7 +72,7 @@ class Gun:
                 self.ammo = self.reload(self.ammo, self.capacity)
         
         if(pygame.mouse.get_pressed()[0]):
-            self.shoot(self.pos, self.mousepos)
+            self.shoot(self.pos, self.mousepos, 20)
 
         self.pos = pygame.Vector2(position)
         #make position player position

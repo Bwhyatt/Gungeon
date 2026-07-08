@@ -6,16 +6,16 @@ class Realplayer:
        self.speed = speed
        self.size = pygame.Vector2(size)
        self.pos = pygame.Vector2(pos)
-       self.rect = pygame.Rect( self.pos.x, self.pos.y, self.size[0], self.size[1])
+       self.Rect = pygame.Rect( self.pos.x, self.pos.y, self.size[0], self.size[1])
        self.alive = True
        self.gun = Gun.Gun((50, 20), "pistol", pygame.mouse.get_pos(), self.pos)
     def update(self, screen, keys, dt, mousepos):
         self.move(keys, dt, self.speed)
         #for now keys will be passed in
         self.draw(screen)
-        self.rect = pygame.Rect( self.pos.x, self.pos.y, self.size[0], self.size[1])
+        self.Rect = pygame.Rect( self.pos.x, self.pos.y, self.size[0], self.size[1])
     def draw(self, screen):
-        pygame.draw.rect(screen, "green", self.rect)
+        pygame.draw.rect(screen, "green", self.Rect)
     def move(self, keys, dt, speed):
         if keys[pygame.K_w]:
             self.pos.y -= speed * dt
