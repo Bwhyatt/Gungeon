@@ -11,7 +11,6 @@ class Realplayer:
        self.gun = Gun.Gun((50, 20), "pistol", pygame.mouse.get_pos(), self.pos)
     def update(self, screen, keys, dt, mousepos):
         self.move(keys, dt, self.speed)
-        self.gun.update(dt, screen, keys, self.pos, mousepos)# maybe put this in main loop idk
         #for now keys will be passed in
         self.draw(screen)
         self.rect = pygame.Rect( self.pos.x, self.pos.y, self.size[0], self.size[1])

@@ -13,7 +13,9 @@ while running:
         if event.type == pygame.QUIT:
             running = False
     screen.fill("purple")
+    Theplayer.gun.update(dt, screen, pygame.key.get_pressed(), Theplayer.pos, pygame.mouse.get_pos())   
     Theplayer.update(screen, pygame.key.get_pressed(), dt, pygame.mouse.get_pos())
+    
     for bullet in Theplayer.gun.bulletList:
         bullet.update(dt, screen)
     Theplayer.draw(screen)
