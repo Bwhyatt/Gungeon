@@ -18,10 +18,12 @@ while running:
         if event.type == pygame.QUIT:
             running = False
     #enemy bullets = each bullet in the bullet list of each enemy in the enemy list
-    #for i in range(len(Enemies)):
-     #   for j in range(Enemies[j].bulletList):
-      #      if j not in EnemyBullets:
-       #         EnemyBullets.append(j) 
+    
+    EnemyBullets = []
+    for i in range(len(Enemies)):
+        for j in range(len(Enemies[i].bulletList)):
+                EnemyBullets.append(Enemies[i].bulletList[j]) 
+                
     screen.fill("purple")
     Theplayer.gun.update(dt, screen, pygame.key.get_pressed(), Theplayer.pos, pygame.mouse.get_pos())   
     Theplayer.update(screen, pygame.key.get_pressed(), dt, pygame.mouse.get_pos())
@@ -29,6 +31,8 @@ while running:
     #player bullet list and enemy bullet list
     for bullet in Theplayer.gun.bulletList:
         bullet.update(dt, screen)
+    for bullet in EnemyBullets:
+         bullet.update(dt, screen)
     Theplayer.draw(screen)
     pygame.display.flip()
 
