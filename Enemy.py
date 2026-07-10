@@ -1,6 +1,7 @@
 import pygame
 import Bullet
 import math
+
 class BaseEnemy:
     def __init__(self, health, speed, position, size):
         self.health = health
@@ -63,3 +64,10 @@ class BaseEnemy:
         self.Rect = pygame.Rect( self.pos.x, self.pos.y, self.size[0], self.size[1])
         self.draw(screen)
         pass
+
+class Phonk(BaseEnemy):
+    def __init__(self, health, speed, position, size):
+        self.health = super().__init__(health)
+        self.speed = super().__init__(speed)
+        self.position = super().__init__(position)
+        self.size = super().__init__(size)

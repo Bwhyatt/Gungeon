@@ -34,6 +34,13 @@ while running:
     for bullet in EnemyBullets:
          bullet.update(dt, screen)
     Theplayer.draw(screen)
+
+    
+    class_map = {
+        "BaseEnemy": Enemy.BaseEnemy,
+    }
+
+
     pygame.display.flip()
 
     dt = clock.tick(60) / 1000
