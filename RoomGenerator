@@ -1,17 +1,56 @@
 import random
-
+import math
+#    1
+# 4 Room 2
+#    3
 def generate_Dungeon(RoomList):
-    for i in range(len(RoomList)):
-        for j in range(len(RoomList[i].exits)): #exits is like [1, 2] for left and up
+    TheGrid = [ [[] for _ in range(7)] for _ in range(7) ]
+    ValidExits = 0
+    NewRoomList = []
+    for i in range(len(RoomList)):#the first room only has right and down exits how to store id in next line?
+        for j in range(len(RoomList[i].exits)): #exits is like [[(1, false), (2, false)], [(3, false), (4 False)]] for left and up and false for if up is taken
+            #this is wrong since we won't be iterating linearly
+            for l in range(RoomList[i].exits[j]):
+                if(RoomList[i].exits[j][1] == False):
+                    ValidExits += 1
+            CompatibleRoomFound = False
             RandomConnectedRoom = random.randint(0, len(RoomList))
             #might have to do -1
-            hascommon = not set(RoomList[i].exits).isdisjoint(RoomList[RandomConnectedRoom].exits)
-            WhileCounter = 0
-            while not hascommon and WhileCounter < 4:
-                WhileCounter += 1
-                RandomConnectedRoom = random.randint(0, len(RoomList))
-                hascommon = not set(RoomList[i].exits).isdisjoint(RoomList[RandomConnectedRoom].exits)
+            RoomISet =  {item[0] for item in RoomList[i].exits} 
+            RandomRoomSet = {item[0] for item in RoomList[RandomConnectedRoom].exits}
+            for i in range(RoomISet):
+                if RoomISet[i] + 2 in RandomRoomSet:
+                    ValidExits -= 2
+                    RoomStr = str(i) + str(RoomISet[i] + 2) + str(RandomConnectedRoom)
+                    RoomList[i].exits[RoomISet + 2][0] == True
+                    RoomList[RandomConnectedRoom].exits[RoomISet + 2][0] == True
+                    print(RoomStr)
+                    break
+                elif RoomISet[i] - 2 in RandomRoomSet:
+                    ValidExits -= 2
+                    RoomStr = str(i) + str(RoomISet[i] - 2) + str(RandomConnectedRoom)
+                    RoomList[i].exits[RoomISet - 2][0] == True
+                    RoomList[RandomConnectedRoom].exits[RoomISet - 2][0] == True
+                    print(RoomStr)
+                    break
+            
+                #here for every unfilled exit we will check for adjacent exits    
+                #if it is still false then take it out of the list of possibilities
+
                 #break out of loop eventually
             #make the exits simply generate
             #I need something that will determine if a room already has the max number of exits
-    return NewRoomList
+    return
+tester = [
+  [(1, False), (2, False)],
+  [(1, False), (2, False), (3, False), (4, False)],
+  [(2, False), (3, False)],
+  [(1, False), (2, False), (3, False)],
+  [(3, False), (4, False)],
+  [(1, False), (2, False), (3, False), (4, False)],
+  [(2, False), (3, False)],
+  [(1, False)],
+  [(2, False), (3, False), (4, False)],
+  [(1, False), (2, False)]
+]
+generate_Dungeon(tester)
