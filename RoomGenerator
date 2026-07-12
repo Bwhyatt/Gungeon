@@ -4,43 +4,174 @@ import math
 # 4 Room 2
 #    3
 def generate_Dungeon(RoomList):
-    TheGrid = [ [[] for _ in range(7)] for _ in range(7) ]
+    # ValidExits = 0
+    # NewRoomList = []
+    # print("BLEH B")
+    # for i in range(len(RoomList)):#the first room only has right and down exits how to store id in next line?
+    #     for j in range(len(RoomList[i])): #exits is like [[(1, false), (2, false)], [(3, false), (4 False)]] for left and up and false for if up is taken
+    #         #this is wrong since we won't be iterating linearly
+    #         for l in range(RoomList[i][j][1]):
+    #             if(RoomList[i][j][1] == False):
+    #                 ValidExits += 1
+    #     CompatibleRoomFound = False
+    #     CompatibleCounter = 0
+    #     while not CompatibleRoomFound and CompatibleCounter < len(RoomList):
+    #         CompatibleCounter+= 1
+    #         RandomConnectedRoom = random.randint(0, len(RoomList) - 1)
+    #         while RandomConnectedRoom == i:
+    #             RandomConnectedRoom = random.randint(0, len(RoomList) - 1)
+    #         #might have to do -1
+    #         RoomISet =  [item[0] for item in RoomList[i]]
+    #         RandomRoomSet = [item[0] for item in RoomList[RandomConnectedRoom]]
+    #         #print( RandomRoomSet)  
+    #         for a in range(len(RoomISet)):#NEED EACH ITEM TO BE IN THE START AND END OF AT LEAST 1 NEW ROOM
+    #             if RoomISet[a] + 2 in RandomRoomSet and RoomList[RandomConnectedRoom][RandomRoomSet.index(RoomISet[a]+2)][1] !=  True and RoomList[i][a][1] != True:#so if we have RoomISet[a] = 2 we are checking if randomRoomSet has 4
+    #                 ValidExits -= 2
+    #                 if(RandomConnectedRoom < 10):
+    #                     if(i < 10):
+    #                         RoomStr = str(0) + str(i) + str(RoomISet[a]) + str(0) + str(RandomConnectedRoom)
+    #                     else:
+    #                         RoomStr = str(i) + str(RoomISet[a]) + str(0) + str(RandomConnectedRoom)
+    #                 else:
+    #                     if(i < 10):
+    #                         RoomStr = str(0) + str(i) + str(RoomISet[a]) + str(RandomConnectedRoom)
+    #                     else:
+    #                         RoomStr = str(i) + str(RoomISet[a]) + str(RandomConnectedRoom)
+    #                 # print(RoomStr)
+    #                 #print("The roomISet[a] is " + str(RoomISet[a] -1))
+    #                 RoomList[i][a] =(RoomISet[a], True)
+    #                 RoomList[RandomConnectedRoom][RandomRoomSet.index(RoomISet[a]+2)] = (RoomISet[a]+2, True)#index randomroom set to find which element has it
+    #                 NewRoomList.append(RoomStr)
+    #                 CompatibleRoomFound = True
+    #                 break
+    #             elif RoomISet[a] - 2 in RandomRoomSet and RoomList[RandomConnectedRoom][RandomRoomSet.index(RoomISet[a]-2)][1] != True and RoomList[i][a][1] != True:
+    #                 ValidExits -= 2
+    #                 if(RandomConnectedRoom < 10):
+    #                     if(i < 10):
+    #                         RoomStr = str(0) + str(i) + str(RoomISet[a]) + str(0) + str(RandomConnectedRoom)
+    #                     else:
+    #                         RoomStr = str(i) + str(RoomISet[a]) + str(0) + str(RandomConnectedRoom)
+    #                 else:
+    #                     if(i < 10):
+    #                         RoomStr = str(0) + str(i) + str(RoomISet[a]) + str(RandomConnectedRoom)
+    #                     else:
+    #                         RoomStr = str(i) + str(RoomISet[a]) + str(RandomConnectedRoom)
+    #                 #print(RoomStr)                    
+    #                 #print("The roomISet[a] is " + str(RoomISet[a] -2))
+    #                 RoomList[i][a] = (RoomISet[a], True) 
+    #                 RoomList[RandomConnectedRoom][RandomRoomSet.index(RoomISet[a]-2)] = (RoomISet[a]-2, True)
+    #                 NewRoomList.append(RoomStr)
+    #                 CompatibleRoomFound = True
+    #                 break
+
+    #         #here for every unfilled exit we will check for adjacent exits    
+    #         #if it is still false then take it out of the list of possibilities
+
+    #         #break out of loop eventually
+    #     #make the exits simply generate
+    #     #I need something that will determine if a room already has the max number of exits
+    # return NewRoomList
     ValidExits = 0
     NewRoomList = []
+    print("BLEH B")
     for i in range(len(RoomList)):#the first room only has right and down exits how to store id in next line?
-        for j in range(len(RoomList[i].exits)): #exits is like [[(1, false), (2, false)], [(3, false), (4 False)]] for left and up and false for if up is taken
+        print("I value is " + str(i))
+        for j in range(len(RoomList)): #exits is like [[(1, false), (2, false)], [(3, false), (4 False)]] for left and up and false for if up is taken
             #this is wrong since we won't be iterating linearly
-            for l in range(RoomList[i].exits[j]):
-                if(RoomList[i].exits[j][1] == False):
-                    ValidExits += 1
-            CompatibleRoomFound = False
-            RandomConnectedRoom = random.randint(0, len(RoomList))
-            #might have to do -1
-            RoomISet =  {item[0] for item in RoomList[i].exits} 
-            RandomRoomSet = {item[0] for item in RoomList[RandomConnectedRoom].exits}
-            for i in range(RoomISet):
-                if RoomISet[i] + 2 in RandomRoomSet:
-                    ValidExits -= 2
-                    RoomStr = str(i) + str(RoomISet[i] + 2) + str(RandomConnectedRoom)
-                    RoomList[i].exits[RoomISet + 2][0] == True
-                    RoomList[RandomConnectedRoom].exits[RoomISet + 2][0] == True
-                    print(RoomStr)
-                    break
-                elif RoomISet[i] - 2 in RandomRoomSet:
-                    ValidExits -= 2
-                    RoomStr = str(i) + str(RoomISet[i] - 2) + str(RandomConnectedRoom)
-                    RoomList[i].exits[RoomISet - 2][0] == True
-                    RoomList[RandomConnectedRoom].exits[RoomISet - 2][0] == True
-                    print(RoomStr)
-                    break
-            
-                #here for every unfilled exit we will check for adjacent exits    
-                #if it is still false then take it out of the list of possibilities
+            if(i != j):
+                RoomISet =  [item[0] for item in RoomList[i]]
+                RandomRoomSet = [item[0] for item in RoomList[j]]
+                #print( RandomRoomSet)  
+                for a in range(len(RoomISet)):#NEED EACH ITEM TO BE IN THE START AND END OF AT LEAST 1 NEW ROOM
 
-                #break out of loop eventually
-            #make the exits simply generate
-            #I need something that will determine if a room already has the max number of exits
-    return
+                    if RoomISet[a] + 2 in RandomRoomSet and RoomList[j][RandomRoomSet.index(RoomISet[a]+2)][1] !=  True and RoomList[i][a][1] != True:#so if we have RoomISet[a] = 2 we are checking if randomRoomSet has 4
+                        ValidExits -= 2
+                        if(j < 10):
+                            if(i < 10):
+                                RoomStr = str(0) + str(i) + str(RoomISet[a]) + str(0) + str(j)
+                            else:
+                                RoomStr = str(i) + str(RoomISet[a]) + str(0) + str(j)
+                        else:
+                            if(i < 10):
+                                RoomStr = str(0) + str(i) + str(RoomISet[a]) + str(j)
+                            else:
+                                RoomStr = str(i) + str(RoomISet[a]) + str(j)
+                        # print(RoomStr)
+                        #print("The roomISet[a] is " + str(RoomISet[a] -1))
+                        RoomList[i][a] =(RoomISet[a], True)
+                        RoomList[j][RandomRoomSet.index(RoomISet[a]+2)] = (RoomISet[a]+2, True)#index randomroom set to find which element has it
+                        NewRoomList.append(RoomStr)
+                        break
+                    elif RoomISet[a] - 2 in RandomRoomSet and RoomList[j][RandomRoomSet.index(RoomISet[a]-2)][1] != True and RoomList[i][a][1] != True:
+                        ValidExits -= 2
+                        if(j < 10):
+                            if(i < 10):
+                                RoomStr = str(0) + str(i) + str(RoomISet[a]) + str(0) + str(j)
+                            else:
+                                RoomStr = str(i) + str(RoomISet[a]) + str(0) + str(j)
+                        else:
+                            if(i < 10):
+                                RoomStr = str(0) + str(i) + str(RoomISet[a]) + str(j)
+                            else:
+                                RoomStr = str(i) + str(RoomISet[a]) + str(j)
+                        #print(RoomStr)                    
+                        #print("The roomISet[a] is " + str(RoomISet[a] -2))
+                        RoomList[i][a] = (RoomISet[a], True) 
+                        RoomList[j][RandomRoomSet.index(RoomISet[a]-2)] = (RoomISet[a]-2, True)
+                        NewRoomList.append(RoomStr)
+                        break
+
+            #here for every unfilled exit we will check for adjacent exits    
+            #if it is still false then take it out of the list of possibilities
+
+            #break out of loop eventually
+        #make the exits simply generate
+        #I need something that will determine if a room already has the max number of exits
+    for i in range(len(RoomList)):
+        print(RoomList[i])
+    return NewRoomList
+
+
+#If you're standing in room 0 and you go through door 1, you arrive at room 3. if '00103'
+
+def MakeDungeonGrid(TheGrid, RoomList, coords, ThecurrentNum):
+    CurrentX = coords[0]
+    CurrentY = coords[1]
+    TheGrid[CurrentX][CurrentY] = RoomList[0][:2]# Not zero
+    StartDigits = [item[:2] for item in RoomList]
+    str(ThecurrentNum)
+    ThecurrentNum = str(0) + str(ThecurrentNum) if int(ThecurrentNum) < 10 else ThecurrentNum
+    
+    for i in range(len(RoomList)):
+            # print(RoomList[i][:2])
+            # print(str(ThecurrentNum))
+            if(RoomList[i][:2] == str(ThecurrentNum)):
+                TheGrid[CurrentX][CurrentY] = RoomList[i][:2]
+                print("The middle value is " + RoomList[i][2])
+                if(RoomList[i][2] == 1):#depends if the middle digit is like x goes this direction into room y or like other way around idk
+                    CurrentY -= 1
+                    #find index of whichever element begins with the last 2 digits of our list and then we call the function and pass that in as our room
+                if(RoomList[i][2] == 2):
+                    CurrentX += 1
+                if(RoomList[i][2] == 3):
+                    CurrentY += 1   
+                if(RoomList[i][2] == 4):
+                    CurrentX -= 1
+                CloneRoomList = [item for item in RoomList if item != RoomList[i]]
+                #TheGrid[CurrentX][CurrentY] = RoomList[i][3:]
+                try:
+                    ThecurrentNum = StartDigits.index(RoomList[i][3:])
+                except:
+                    return TheGrid
+            else:
+                #print("SENFSN")
+                pass
+    #TheGrid = [a + b for a, b in zip(TheGrid, MakeDungeonGrid(TheGrid, RoomList, (CurrentX, CurrentY), ThecurrentNum), (CurrentX, CurrentY), ThecurrentNum)]
+        #The next room becomes whatever the last 2 numbers are and it keeps going from there
+    return TheGrid
+    #roomlist the first 2 digts and then 1 up is the second 2 digits
+
+MyGrid = [['' for _ in range(7)] for _ in range(7)]
 tester = [
   [(1, False), (2, False)],
   [(1, False), (2, False), (3, False), (4, False)],
@@ -53,4 +184,7 @@ tester = [
   [(2, False), (3, False), (4, False)],
   [(1, False), (2, False)]
 ]
-generate_Dungeon(tester)
+RoomConnections = generate_Dungeon(tester)
+print(RoomConnections)
+print("generate_Dungeon finished")  # Add this line
+print(MakeDungeonGrid(MyGrid, RoomConnections, (0,0), 00))
