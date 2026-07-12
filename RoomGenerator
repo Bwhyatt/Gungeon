@@ -3,82 +3,21 @@ import math
 #    1
 # 4 Room 2
 #    3
-def generate_Dungeon(RoomList):
-    # ValidExits = 0
-    # NewRoomList = []
-    # print("BLEH B")
-    # for i in range(len(RoomList)):#the first room only has right and down exits how to store id in next line?
-    #     for j in range(len(RoomList[i])): #exits is like [[(1, false), (2, false)], [(3, false), (4 False)]] for left and up and false for if up is taken
-    #         #this is wrong since we won't be iterating linearly
-    #         for l in range(RoomList[i][j][1]):
-    #             if(RoomList[i][j][1] == False):
-    #                 ValidExits += 1
-    #     CompatibleRoomFound = False
-    #     CompatibleCounter = 0
-    #     while not CompatibleRoomFound and CompatibleCounter < len(RoomList):
-    #         CompatibleCounter+= 1
-    #         RandomConnectedRoom = random.randint(0, len(RoomList) - 1)
-    #         while RandomConnectedRoom == i:
-    #             RandomConnectedRoom = random.randint(0, len(RoomList) - 1)
-    #         #might have to do -1
-    #         RoomISet =  [item[0] for item in RoomList[i]]
-    #         RandomRoomSet = [item[0] for item in RoomList[RandomConnectedRoom]]
-    #         #print( RandomRoomSet)  
-    #         for a in range(len(RoomISet)):#NEED EACH ITEM TO BE IN THE START AND END OF AT LEAST 1 NEW ROOM
-    #             if RoomISet[a] + 2 in RandomRoomSet and RoomList[RandomConnectedRoom][RandomRoomSet.index(RoomISet[a]+2)][1] !=  True and RoomList[i][a][1] != True:#so if we have RoomISet[a] = 2 we are checking if randomRoomSet has 4
-    #                 ValidExits -= 2
-    #                 if(RandomConnectedRoom < 10):
-    #                     if(i < 10):
-    #                         RoomStr = str(0) + str(i) + str(RoomISet[a]) + str(0) + str(RandomConnectedRoom)
-    #                     else:
-    #                         RoomStr = str(i) + str(RoomISet[a]) + str(0) + str(RandomConnectedRoom)
-    #                 else:
-    #                     if(i < 10):
-    #                         RoomStr = str(0) + str(i) + str(RoomISet[a]) + str(RandomConnectedRoom)
-    #                     else:
-    #                         RoomStr = str(i) + str(RoomISet[a]) + str(RandomConnectedRoom)
-    #                 # print(RoomStr)
-    #                 #print("The roomISet[a] is " + str(RoomISet[a] -1))
-    #                 RoomList[i][a] =(RoomISet[a], True)
-    #                 RoomList[RandomConnectedRoom][RandomRoomSet.index(RoomISet[a]+2)] = (RoomISet[a]+2, True)#index randomroom set to find which element has it
-    #                 NewRoomList.append(RoomStr)
-    #                 CompatibleRoomFound = True
-    #                 break
-    #             elif RoomISet[a] - 2 in RandomRoomSet and RoomList[RandomConnectedRoom][RandomRoomSet.index(RoomISet[a]-2)][1] != True and RoomList[i][a][1] != True:
-    #                 ValidExits -= 2
-    #                 if(RandomConnectedRoom < 10):
-    #                     if(i < 10):
-    #                         RoomStr = str(0) + str(i) + str(RoomISet[a]) + str(0) + str(RandomConnectedRoom)
-    #                     else:
-    #                         RoomStr = str(i) + str(RoomISet[a]) + str(0) + str(RandomConnectedRoom)
-    #                 else:
-    #                     if(i < 10):
-    #                         RoomStr = str(0) + str(i) + str(RoomISet[a]) + str(RandomConnectedRoom)
-    #                     else:
-    #                         RoomStr = str(i) + str(RoomISet[a]) + str(RandomConnectedRoom)
-    #                 #print(RoomStr)                    
-    #                 #print("The roomISet[a] is " + str(RoomISet[a] -2))
-    #                 RoomList[i][a] = (RoomISet[a], True) 
-    #                 RoomList[RandomConnectedRoom][RandomRoomSet.index(RoomISet[a]-2)] = (RoomISet[a]-2, True)
-    #                 NewRoomList.append(RoomStr)
-    #                 CompatibleRoomFound = True
-    #                 break
-
-    #         #here for every unfilled exit we will check for adjacent exits    
-    #         #if it is still false then take it out of the list of possibilities
-
-    #         #break out of loop eventually
-    #     #make the exits simply generate
-    #     #I need something that will determine if a room already has the max number of exits
-    # return NewRoomList
+def generate_Dungeon(RoomList, TheGivenStart):
     ValidExits = 0
     NewRoomList = []
     print("BLEH B")
-    for i in range(len(RoomList)):#the first room only has right and down exits how to store id in next line?
-        print("I value is " + str(i))
+    
+    Connection = False
+    for i in range(TheGivenStart,len(RoomList)):#the first room only has right and down exits how to store id in next line?
         for j in range(len(RoomList)): #exits is like [[(1, false), (2, false)], [(3, false), (4 False)]] for left and up and false for if up is taken
             #this is wrong since we won't be iterating linearly
-            if(i != j):
+            
+            NewRoomLastDigits = [item[3:] for item in NewRoomList]
+            TheChecker = str(j)
+            if(len(TheChecker) < 2):
+                TheChecker = str(0) + TheChecker
+            if(i != j and TheChecker not in NewRoomLastDigits):
                 RoomISet =  [item[0] for item in RoomList[i]]
                 RandomRoomSet = [item[0] for item in RoomList[j]]
                 #print( RandomRoomSet)  
@@ -101,6 +40,7 @@ def generate_Dungeon(RoomList):
                         RoomList[i][a] =(RoomISet[a], True)
                         RoomList[j][RandomRoomSet.index(RoomISet[a]+2)] = (RoomISet[a]+2, True)#index randomroom set to find which element has it
                         NewRoomList.append(RoomStr)
+                        Connection = True
                         break
                     elif RoomISet[a] - 2 in RandomRoomSet and RoomList[j][RandomRoomSet.index(RoomISet[a]-2)][1] != True and RoomList[i][a][1] != True:
                         ValidExits -= 2
@@ -119,16 +59,18 @@ def generate_Dungeon(RoomList):
                         RoomList[i][a] = (RoomISet[a], True) 
                         RoomList[j][RandomRoomSet.index(RoomISet[a]-2)] = (RoomISet[a]-2, True)
                         NewRoomList.append(RoomStr)
+                        Connection = True
                         break
-
+                        #call the function again and use room list as parameter but modified
+        # if(Connection):
+        #     n = generate_Dungeon(RoomList, i)
+        #     for i in range(len(n)):
+        #         NewRoomList.append(n[i])
             #here for every unfilled exit we will check for adjacent exits    
             #if it is still false then take it out of the list of possibilities
-
             #break out of loop eventually
         #make the exits simply generate
         #I need something that will determine if a room already has the max number of exits
-    for i in range(len(RoomList)):
-        print(RoomList[i])
     return NewRoomList
 
 
@@ -137,41 +79,78 @@ def generate_Dungeon(RoomList):
 def MakeDungeonGrid(TheGrid, RoomList, coords, ThecurrentNum):
     CurrentX = coords[0]
     CurrentY = coords[1]
-    TheGrid[CurrentX][CurrentY] = RoomList[0][:2]# Not zero
+    TheGrid[CurrentX][CurrentY] = RoomList[ThecurrentNum][:2]# Not zero
     StartDigits = [item[:2] for item in RoomList]
     str(ThecurrentNum)
     ThecurrentNum = str(0) + str(ThecurrentNum) if int(ThecurrentNum) < 10 else ThecurrentNum
-    
+    #get coordinates of 0, 0
+    PlacedDictionary = dict()
+    PlacedDictionary = {ThecurrentNum : (CurrentY, CurrentX)}
     for i in range(len(RoomList)):
+            
             # print(RoomList[i][:2])
             # print(str(ThecurrentNum))
-            if(RoomList[i][:2] == str(ThecurrentNum)):
-                TheGrid[CurrentX][CurrentY] = RoomList[i][:2]
-                print("The middle value is " + RoomList[i][2])
-                if(RoomList[i][2] == 1):#depends if the middle digit is like x goes this direction into room y or like other way around idk
-                    CurrentY -= 1
-                    #find index of whichever element begins with the last 2 digits of our list and then we call the function and pass that in as our room
-                if(RoomList[i][2] == 2):
-                    CurrentX += 1
-                if(RoomList[i][2] == 3):
-                    CurrentY += 1   
-                if(RoomList[i][2] == 4):
-                    CurrentX -= 1
+            ThecurrentNum = RoomList[i][:2]
+            CurrentX = PlacedDictionary[ThecurrentNum][1]
+            CurrentY = PlacedDictionary[ThecurrentNum][0]
+            BeforeCurrentX = CurrentX
+            BeforeCurrentY = CurrentY # for back tracking purposes
+            if(RoomList[i][2] == str(1)):#depends if the middle digit is like x goes this direction into room y or like other way around idk
+                CurrentY -= 1
+                #find index of whichever element begins with the last 2 digits of our list and then we call the function and pass that in as our room
+            if(RoomList[i][2] == str(2)):
+                CurrentX += 1
+            if(RoomList[i][2] == str(3)):
+                CurrentY += 1   
+            if(RoomList[i][2] == str(4)):
+                CurrentX -= 1
+            if((CurrentY, CurrentX) not in PlacedDictionary.values()):
                 CloneRoomList = [item for item in RoomList if item != RoomList[i]]
-                #TheGrid[CurrentX][CurrentY] = RoomList[i][3:]
-                try:
-                    ThecurrentNum = StartDigits.index(RoomList[i][3:])
-                except:
-                    return TheGrid
+                TheGrid[CurrentY][CurrentX] = RoomList[i][3:]
+                ThecurrentNum = RoomList[i][3:]
+                PlacedDictionary[ThecurrentNum] = (CurrentY, CurrentX)
             else:
-                #print("SENFSN")
-                pass
+                CurrentX = BeforeCurrentX 
+                CurrentY = BeforeCurrentY  # for back tracking purposes
     #TheGrid = [a + b for a, b in zip(TheGrid, MakeDungeonGrid(TheGrid, RoomList, (CurrentX, CurrentY), ThecurrentNum), (CurrentX, CurrentY), ThecurrentNum)]
         #The next room becomes whatever the last 2 numbers are and it keeps going from there
     return TheGrid
     #roomlist the first 2 digts and then 1 up is the second 2 digits
-
-MyGrid = [['' for _ in range(7)] for _ in range(7)]
+def ValidateGrid(ConnectionNum, GivenRoomLen):
+    if(ConnectionNum == GivenRoomLen): #for any grid of length n there will be n -1 connections
+        return False
+    return True
+def CheckConnections(GivenGrid, GivenNum, GivenRoomLen, NumberBeenChecked):
+    ConnectionNum = 0
+    NumberChecked = NumberBeenChecked
+    i = GivenNum[1]
+    j = GivenNum[0]
+    CheckedList = []
+    ValidateList = []
+    if(GivenGrid[i - 1][j] != '' and GivenGrid[i-1][j] not in CheckedList):
+        ConnectionNum += 1
+        NumberChecked += 1
+        ValidateList.append((i -1,j))
+    if(GivenGrid[i +1][j] != ''and GivenGrid[i+1][j] not in CheckedList):
+        ConnectionNum += 1
+        NumberChecked += 1
+        ValidateList.append((i +1,j))
+    if(GivenGrid[i][j-1] != '' and GivenGrid[i][j-1] not in CheckedList):
+        ConnectionNum += 1
+        NumberChecked += 1
+        ValidateList.append((i, j-1))
+    if(GivenGrid[i][j+1] != '' and GivenGrid[i][j+1] not in CheckedList):
+        ConnectionNum += 1
+        NumberChecked += 1
+        ValidateList.append((i, j+1))
+    CheckedList.append(GivenGrid[i][j])
+    if(NumberBeenChecked < GivenRoomLen):
+        for n in range(len(ValidateList)):
+            return ConnectionNum + CheckConnections(GivenGrid,ValidateList[n] ,GivenRoomLen, NumberChecked)
+                #print(len(GivenGrid[0]) * len(GivenGrid) - counter)
+    else:
+        return ConnectionNum
+MyGrid = [['' for _ in range(14)] for _ in range(14)]
 tester = [
   [(1, False), (2, False)],
   [(1, False), (2, False), (3, False), (4, False)],
@@ -184,7 +163,10 @@ tester = [
   [(2, False), (3, False), (4, False)],
   [(1, False), (2, False)]
 ]
-RoomConnections = generate_Dungeon(tester)
-print(RoomConnections)
-print("generate_Dungeon finished")  # Add this line
-print(MakeDungeonGrid(MyGrid, RoomConnections, (0,0), 00))
+RoomConnections = generate_Dungeon(tester, 0)
+print(RoomConnections)  # Add this line
+Grid = MakeDungeonGrid(MyGrid, RoomConnections, (round(len(MyGrid[0])/2), round(len(MyGrid)/2)), 00)
+for i in range(len(Grid)):
+    print(Grid[i])
+NumConnections = CheckConnections(Grid, (round(len(MyGrid[0])/2), round(len(MyGrid)/2)), len(RoomConnections), 1)
+print(ValidateGrid(NumConnections, len(RoomConnections)))
