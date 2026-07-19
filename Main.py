@@ -10,9 +10,10 @@ dt = 0
 Enemies = []
 EnemyBullets = []
 myEnemy = Enemy.BaseEnemy(100, 50, (500, 500), (30, 30))
+Enemy2 = Enemy.Bowler(100, 50, (200, 500), (30, 30))
 Enemies.append(myEnemy)
 #this will eventually be dependent on the room and it will just give us the list of enemies so it's fine to just hard code them for now
-Theplayer = Player.Realplayer(300, (100, 100), (100,100))
+Theplayer = Player.Realplayer(300, (100, 100), (100,100), "Shotgun")
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -25,9 +26,12 @@ while running:
                 EnemyBullets.append(Enemies[i].bulletList[j]) 
                 
     screen.fill("purple")
-    Theplayer.gun.update(dt, screen, pygame.key.get_pressed(), Theplayer.pos, pygame.mouse.get_pos())   
+      
     Theplayer.update(screen, pygame.key.get_pressed(), dt, pygame.mouse.get_pos())
+    Theplayer.gun.update(dt, screen, pygame.key.get_pressed(), Theplayer.pos, pygame.mouse.get_pos()) 
     myEnemy.update(dt, Theplayer.pos, Theplayer.gun.bulletList, screen)
+    myEnemy.gun.update(dt, screen, pygame.key.get_pressed(), myEnemy.pos, Theplayer.pos)
+    Enemy2.update(dt, Theplayer.pos, Theplayer.gun.bulletList, screen)
     #player bullet list and enemy bullet list
     for bullet in Theplayer.gun.bulletList:
         bullet.update(dt, screen)

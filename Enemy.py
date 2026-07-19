@@ -1,8 +1,8 @@
 import pygame
-import Bullet
+import Gun
 import math
 
-class BaseEnemy:
+class BaseEnemy:#Use generalisation to make a bunch of different enemies that are the same but with a different gun
     def __init__(self, health, speed, position, size):
         self.health = health
         self.speed = speed
@@ -12,7 +12,10 @@ class BaseEnemy:
         self.stunned = False
         self.stunTime = 0
         self.bulletList = []
-        
+        self.gun = Gun.GunParent((50, 20), "None", pygame.mouse.get_pos(), self.pos, True)
+        self.CanMove = True
+        self.AttackCoolDown = 5
+        self.parryRect = None
     def Collision(self, obj2):#iterate through each of the player's bullets
         if(self.Rect.colliderect(obj2.Rect)):
             print("YES COLLIDE")
@@ -27,9 +30,8 @@ class BaseEnemy:
         self.stunTime = time
         self.stunned = True
     def Attack(self, dt, player_pos, selfpos):
-        Bullet1 = Bullet.bullet(20, "circle", 500, player_pos, selfpos,20)
-        self.bulletList.append(Bullet1)
-        #for now it will just shoot a bullet at the player before the abstraction happens
+        
+        pass
     def Move(self, dt, player_pos, speed):
         angle = math.atan2(player_pos[1] - self.pos[1],player_pos[0] - self.pos[0])
         self.pos += pygame.Vector2(math.cos(angle) * speed * dt, math.sin(angle)* dt * speed)
@@ -44,30 +46,67 @@ class BaseEnemy:
     #TBD
     def WallResolveCollision(self, wall):
         pass
+    
+    def CanAttacK(self, player_pos):
+        pass #This will check if there is nothin obstructing the enemy like a wall, if it is out of range or if the attack is on cooldown for melee attacks
     def draw(self, screen):
         pygame.draw.rect(screen, "red", self.Rect)
+        if self.parryRect != None:
+            pygame.draw.rect(screen, "blue", self.parryRect)
+    def DetermineAction(self, dt, player_pos, ):
+        if(self.stunned):
+            self.stunTime -= dt
+            if(self.stunTime <= 0):
+                self.stunned = False
+        else:
+            if(self.CanMove):
+                self.Move(dt, player_pos, self.speed)
+            
     def update(self, dt, player_pos, playerbulletlist, screen):
+        self.AttackCoolDown -= dt
         for i in range(len(playerbulletlist)):
             if(self.Collision(playerbulletlist[i])):
                 self.ResolveCollision(playerbulletlist[i])
          #make sure this happens after all the bullets update   
         if self.health <= 0:
             self.Die()
+        self.DetermineAction(dt, player_pos)
+        #run other functions
+        self.bulletList = [bullet for bullet in self.gun.bulletList]
+        self.Rect = pygame.Rect( self.pos.x, self.pos.y, self.size[0], self.size[1])
+        self.draw(screen)
+        pass
+
+class Bowler(BaseEnemy):
+    def __init__(self, health, speed, position, size):
+        super().__init__(health,speed, position, size)
+        self.pos = position
+        self.AttackCoolDown = 1
+        self.IsAttacking = False
+        self.LaunchSpeed = 1000
+        self.parryRect = pygame.Rect(self.pos[0] - self.size[0], self.pos[1] - self.size[1], self.size[0] * 2, self.size[1] * 2)
+    def determinedir(self, Targetpos):
+        acute_rad = math.atan2(Targetpos.y - self.pos.y, Targetpos.x - self.pos.x)
+        return acute_rad
+        #self.pos += pygame.Vector2(math.cos(angle) * LaunchSpeed * dt, math.sin(angle)* dt * LaunchSpeed)
+    def Attack(self):
+        self.IsAttacking = True
+        self.CanMove = False
+        self.AttackCoolDown = 1
+    def DetermineAction(self, dt, player_pos):
+        self.parryRect = pygame.Rect(self.pos[0] - self.size[0], self.pos[1] - self.size[1], self.size[0] * 2, self.size[1] * 2)
         if(self.stunned):
             self.stunTime -= dt
             if(self.stunTime <= 0):
                 self.stunned = False
         else:
-            self.Move(dt, player_pos, self.speed)
-            self.Attack(dt, player_pos, self.pos)
-            pass#run other functions
-        self.Rect = pygame.Rect( self.pos.x, self.pos.y, self.size[0], self.size[1])
-        self.draw(screen)
-        pass
-
-class Phonk(BaseEnemy):
-    def __init__(self, health, speed, position, size):
-        self.health = super().__init__(health)
-        self.speed = super().__init__(speed)
-        self.position = super().__init__(position)
-        self.size = super().__init__(size)
+            if(self.CanMove):
+                self.Move(dt, player_pos, self.speed)
+            if(self.CanMove and not self.IsAttacking and self.AttackCoolDown <= 0):
+                self.angle = self.determinedir(player_pos)
+                self.Attack()
+            elif(not self.CanMove and self.IsAttacking):#NEED SOMETHING TO END ATTACK
+                self.pos += pygame.Vector2(math.cos(self.angle) * self.LaunchSpeed * dt, math.sin(self.angle)* dt * self.LaunchSpeed)
+class PinBaller(Bowler):
+    def __init__(self, health,speed, position, size):
+        super().__init__(health,speed, position, size)

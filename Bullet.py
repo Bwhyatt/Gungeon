@@ -13,12 +13,13 @@ class bullet:
         self.tag = "Bullet"
     def determinedir(self, targetpos):
        #since the up is reversed and down for me on the screen is up which is the opposite on num plane so needs to be self 1 for rise
-        print("targetpos is " + str(targetpos))
-        print("self pos is " + str(self.pos))
+        
+        #print("targetpos is " + str(targetpos))
+        #print("self pos is " + str(self.pos))
 
         acute_rad = math.atan2((targetpos[1] - self.pos[1]), (targetpos[0] - self.pos[0]))
 
-        print("acutesef sjdfjse " + str(acute_rad))
+        #print("acutesef sjdfjse " + str(acute_rad))
         return acute_rad
     def move(self, speed, dt, angle):
         #remember plus both will go bottom right

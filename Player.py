@@ -2,13 +2,15 @@
 import pygame
 import Gun
 class Realplayer:
-    def __init__(self, speed, size, pos):
+    def __init__(self, speed, size, pos, GivenGun):
+       ChosenGun = Gun.WhichGun[GivenGun]
        self.speed = speed
        self.size = pygame.Vector2(size)
        self.pos = pygame.Vector2(pos)
        self.Rect = pygame.Rect( self.pos.x, self.pos.y, self.size[0], self.size[1])
        self.alive = True
-       self.gun = Gun.Gun((50, 20), "pistol", pygame.mouse.get_pos(), self.pos)
+       self.gun = ChosenGun((50, 20), GivenGun, pygame.mouse.get_pos(), self.pos, False)
+       self.inventory = []
     def update(self, screen, keys, dt, mousepos):
         self.move(keys, dt, self.speed)
         #for now keys will be passed in
