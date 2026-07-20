@@ -23,13 +23,15 @@ class RegularSword():
         self.Parrying = False
 
         self.EnemyOwner = Enemy
-        self.hitbox = None
+        self.Rect = None
         self.Swinging = False
 
+        self.damage = 20
+        
         self.size = pygame.Vector2(size)
     def Swing(self,position, Targetpos, damage):
             self.Swinging = True
-            self.hitbox = pygame.Rect(position[0], position [1], self.size[0], self.size[1])
+            self.Rect = pygame.Rect(position[0], position [1], self.size[0], self.size[1])
     def Parry(self, position, Targetpos):
             self.Parrying = True
             self.ParryRect = pygame.Rect(position[0], position [1], self.size[0] * 2, self.size[1] * 2)
@@ -47,8 +49,9 @@ class RegularSword():
         else:
             return False
     def ParryCollision(self, obj2):
-        if(self.ParryRect.colliderect(obj2.Rect)):
-            return True
+        if(obj2.ParryRect != None):
+            if(self.ParryRect.colliderect(obj2.ParryRect)):
+                return True
         return False
     def ResolveParryCollision(self, obj2):
         if(obj2.tag == "Enemy"):
@@ -57,9 +60,9 @@ class RegularSword():
         if(self.Rect.colliderect(obj2.Rect)):
             return True
         return False
-    def ResolveCollision(self, obj2):
+    def ResolveCollision(self, obj2, damage):
         if(obj2.tag == "Enemy"):
-            obj2.TakeDamage(obj2.damage)#Parse enemy object itself not just the position
+            obj2.TakeDamage(damage)#Parse enemy object itself not just the position
     def draw(self, screen, size, position, Targetpos):
         #pygame.draw.rect(screen, "red", (position[0],position[1], size[0], size[1]))
         angle_deg = math.degrees(self.acute_rad)
@@ -75,13 +78,13 @@ class RegularSword():
         rotated_image = pygame.transform.rotate(self.original_image, angle_deg)
         rect = rotated_image.get_rect(center=position)
         screen.blit(rotated_image, rect)
-    def update(self, dt, screen, keys, position, Targetpos):
+    def SwingStateChange(self, dt):
         if(self.Swinging):
             self.SwingDuration += dt
             if(self.SwingDuration >= self.SwingTimer):
                 self.SwingDuration = 0
                 self.Swinging = False
-                self.hitbox = None
+                self.Rect = None
                 self.CoolDownTimer = self.CoolDownDuration
         else:
             self.CoolDownTimer -= dt
@@ -94,6 +97,8 @@ class RegularSword():
                 self.ParryRect = None
         else:
             self.ParryCoolDownTimer -= dt
+    def update(self, dt, screen, keys, position, Targetpos):
+        self.SwingStateChange(dt)
         self.Targetpos = pygame.Vector2(Targetpos)#Need to make this player pos
         self.acute_rad = self.determinedir(self.Targetpos)
         #if they press it then the reload timer will be able to begin
@@ -110,3 +115,10 @@ class RegularSword():
             self.Parry(self.pos, Targetpos)
         if(self.Swinging or self.Parrying):
             self.draw(screen, self.size, self.pos, self.Targetpos) #self.ParryRect,
+class VampireSword(RegularSword):
+    def __init__(self, size,Name, Targetpos, position, Enemy):
+        super().__init__(self, size,Name, Targetpos, position, Enemy)
+        self.RegenAmount = 10 #regen 10 health
+    def ResolveParryCollision(self, obj2):
+        return super().ResolveParryCollision(obj2)
+        

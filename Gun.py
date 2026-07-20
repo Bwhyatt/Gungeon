@@ -109,6 +109,6 @@ class Shotgun(GunParent):
                 ThisTarget = pygame.Vector2(position[0] + math.cos(angle) * 500, position[1] - math.sin(angle) * 500)
                 bullet1 = bullet(20, "circle", 500, ThisTarget, position, damage)
                 self.bulletList.append(bullet1)
-                print("Shot one")
+                #print("Shot one")
         #def __init__(self, size, shape, speed, targetpos, position, damage):
 WhichGun = {cls.__name__: cls for cls in GunParent.__subclasses__()}

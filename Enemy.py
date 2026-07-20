@@ -1,7 +1,7 @@
 import pygame
 import Gun
 import math
-
+import Wall
 class BaseEnemy:#Use generalisation to make a bunch of different enemies that are the same but with a different gun
     def __init__(self, health, speed, position, size, WhichGun):
         #with the which gun do the same as what happened in player class
@@ -18,7 +18,11 @@ class BaseEnemy:#Use generalisation to make a bunch of different enemies that ar
         self.AttackCoolDown = 5
         self.AttackCoolDownTimer = self.AttackCoolDown
         self.AttackDuration = 2
-        self.parryRect = None
+        self.ParryRect = None
+        self.tag = "Enemy"
+        self.Parryable = False
+        self.dir = pygame.Vector2(0, 0)
+        self.BannedDirections = []
     def Collision(self, obj2):#iterate through each of the player's bullets
         if(self.Rect.colliderect(obj2.Rect)):
             return True
@@ -29,6 +33,7 @@ class BaseEnemy:#Use generalisation to make a bunch of different enemies that ar
         if(obj2.tag == "Bullet"):
             self.TakeDamage(obj2.damage)
     def SelfStun(self, time):
+        print("Stunned")
         self.stunTime = time
         self.stunned = True
     def Attack(self, dt, player_pos, selfpos):
@@ -36,24 +41,26 @@ class BaseEnemy:#Use generalisation to make a bunch of different enemies that ar
         pass
     def Move(self, dt, player_pos, speed):
         angle = math.atan2(player_pos[1] - self.pos[1],player_pos[0] - self.pos[0])
-        self.pos += pygame.Vector2(math.cos(angle) * speed * dt, math.sin(angle)* dt * speed)
-
+        Xamt = math.cos(angle) * speed * dt
+        Yamt =  math.sin(angle)* dt * speed
+        self.dir[0]  = 1 if math.cos(angle) >= 0 else -1
+        self.dir[1] = 1 if math.sin(angle) >= 0 else -1
+        if(self.dir[0] == 1 and 2 in self.BannedDirections) or (self.dir[0] == - 1 and 4 in self.BannedDirections):
+            Xamt = 0
+        if(self.dir[0] == 1 and 1 in self.BannedDirections) or (self.dir[1] == - 1 and 3 in self.BannedDirections):
+            Yamt = 0
+        self.pos += pygame.Vector2( Xamt, Yamt)
     def TakeDamage(self, damage):
+        print("I took damage")
         self.health -= damage
     def Die(self):
         pass
-    def WallCollision(self, wall):
-        return False#is a bool
-    #TBD
-    def WallResolveCollision(self, wall):
-        pass
-    
     def CanAttacK(self, player_pos):
         pass #This will check if there is nothin obstructing the enemy like a wall, if it is out of range or if the attack is on cooldown for melee attacks
     def draw(self, screen):
         pygame.draw.rect(screen, "red", self.Rect)
-        if self.parryRect != None:
-            pygame.draw.rect(screen, "blue", self.parryRect)
+        if self.ParryRect != None:
+            pygame.draw.rect(screen, "blue", self.ParryRect)
     def DetermineAction(self, dt, player_pos, ):
         if(self.stunned):
             self.stunTime -= dt
@@ -64,6 +71,8 @@ class BaseEnemy:#Use generalisation to make a bunch of different enemies that ar
                 self.Move(dt, player_pos, self.speed)
             
     def update(self, dt, player_pos, playerbulletlist, screen):
+        
+
         self.AttackDuration -= dt
         for i in range(len(playerbulletlist)):
             if(self.Collision(playerbulletlist[i])):
@@ -75,8 +84,8 @@ class BaseEnemy:#Use generalisation to make a bunch of different enemies that ar
         #run other functions
         self.bulletList = [bullet for bullet in self.gun.bulletList]
         self.Rect = pygame.Rect( self.pos.x, self.pos.y, self.size[0], self.size[1])
-        self.draw(screen)
-        pass
+        
+        
 
 class Bowler(BaseEnemy):
     def __init__(self, health, speed, position, size, WhichGun):
@@ -85,8 +94,9 @@ class Bowler(BaseEnemy):
         self.AttackDuration = 2
         self.IsAttacking = False
         self.LaunchSpeed = 600
-        self.parryRect = pygame.Rect(self.pos[0] - self.size[0], self.pos[1] - self.size[1], self.size[0] * 2, self.size[1] * 2)
+        self.ParryRect = pygame.Rect(self.pos[0] - self.size[0], self.pos[1] - self.size[1], self.size[0] * 2, self.size[1] * 2)
         self.launchTarget = (0,0)
+        self.Parryable = True
     def determinedir(self, Targetpos):
         acute_rad = math.atan2(Targetpos.y - self.pos.y, Targetpos.x - self.pos.x)
         return acute_rad
@@ -105,7 +115,7 @@ class Bowler(BaseEnemy):
         ToTarget = self.launchTarget - self.pos
         return ToTarget.dot(direction) < 0 # dot product will be negative if 
     def DetermineAction(self, dt, player_pos):
-        self.parryRect = pygame.Rect(self.pos[0] - self.size[0], self.pos[1] - self.size[1], self.size[0] * 2, self.size[1] * 2)
+        self.ParryRect = pygame.Rect(self.pos[0] - self.size[0], self.pos[1] - self.size[1], self.size[0] * 2, self.size[1] * 2)
         if(self.stunned):
             self.stunTime -= dt
             if(self.stunTime <= 0):
@@ -132,7 +142,7 @@ class PinBaller(Bowler):
         self.AttackDuration = 2
         self.IsAttacking = False
         self.LaunchSpeed = 300
-        self.parryRect = pygame.Rect(self.pos[0] - self.size[0], self.pos[1] - self.size[1], self.size[0] * 2, self.size[1] * 2)
+        self.ParryRect = None
         self.launchTarget = (0,0)
         self.BufferTimeLen = 0.5
         self.BufferTime = self.BufferTimeLen
@@ -142,7 +152,12 @@ class PinBaller(Bowler):
             self.BufferTime -= dt #after it has overshot this delays it running again
         #print(self.AttackDuration)
         self.AttackCoolDownTimer -= dt
-        self.parryRect = pygame.Rect(self.pos[0] - self.size[0], self.pos[1] - self.size[1], self.size[0] * 2, self.size[1] * 2)
+        if(self.IsAttacking):
+            self.Parryable = True
+            self.ParryRect = pygame.Rect(self.pos[0] - self.size[0], self.pos[1] - self.size[1], self.size[0] * 2, self.size[1] * 2)
+        else:
+            self.Parryable = False
+            self.ParryRect = None
         if(self.stunned):
             self.stunTime -= dt
             if(self.stunTime <= 0):
