@@ -11,6 +11,7 @@ class bullet:
         self.dircounter = 0
         self.Rect = pygame.Rect(self.pos.x, self.pos.y, self.size, self.size)
         self.tag = "Bullet"
+        self.lifetime = 0
     def determinedir(self, targetpos):
        #since the up is reversed and down for me on the screen is up which is the opposite on num plane so needs to be self 1 for rise
         
@@ -29,6 +30,8 @@ class bullet:
     def destroy(self):
         pass
     def update(self, dt, screen):
+        if(self.lifetime > 7):
+            self.kill()
         if self.dircounter == 0:
             self.acute_rad = self.determinedir(self.targetpos)
             self.dircounter += 1

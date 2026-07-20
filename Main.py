@@ -9,11 +9,12 @@ running = True
 dt = 0
 Enemies = []
 EnemyBullets = []
-myEnemy = Enemy.BaseEnemy(100, 50, (500, 500), (30, 30))
-Enemy2 = Enemy.Bowler(100, 50, (200, 500), (30, 30))
+myEnemy = Enemy.BaseEnemy(100, 50, (500, 500), (30, 30), "Pistol")
+Enemy2 = Enemy.PinBaller(100, 50, (200, 500), (30, 30), "None")
 Enemies.append(myEnemy)
+Enemies.append(Enemy2)
 #this will eventually be dependent on the room and it will just give us the list of enemies so it's fine to just hard code them for now
-Theplayer = Player.Realplayer(300, (100, 100), (100,100), "Shotgun")
+Theplayer = Player.Realplayer(300, (100, 100), (100,100), "Shotgun", "RegularSword")
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -29,21 +30,17 @@ while running:
       
     Theplayer.update(screen, pygame.key.get_pressed(), dt, pygame.mouse.get_pos())
     Theplayer.gun.update(dt, screen, pygame.key.get_pressed(), Theplayer.pos, pygame.mouse.get_pos()) 
-    myEnemy.update(dt, Theplayer.pos, Theplayer.gun.bulletList, screen)
-    myEnemy.gun.update(dt, screen, pygame.key.get_pressed(), myEnemy.pos, Theplayer.pos)
-    Enemy2.update(dt, Theplayer.pos, Theplayer.gun.bulletList, screen)
+    Theplayer.Sword.update(dt, screen, pygame.key.get_pressed(), Theplayer.pos, pygame.mouse.get_pos())
+    for i in range(len(Enemies)):
+        Enemies[i].update(dt, Theplayer.pos, Theplayer.gun.bulletList, screen)
+        if Enemies[i].gun != None:
+             Enemies[i].gun.update(dt, screen, pygame.key.get_pressed(), myEnemy.pos, Theplayer.pos)
     #player bullet list and enemy bullet list
     for bullet in Theplayer.gun.bulletList:
         bullet.update(dt, screen)
     for bullet in EnemyBullets:
          bullet.update(dt, screen)
     Theplayer.draw(screen)
-
-    
-    class_map = {
-        "BaseEnemy": Enemy.BaseEnemy,
-    }
-
 
     pygame.display.flip()
 
