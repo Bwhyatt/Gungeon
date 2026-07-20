@@ -5,6 +5,8 @@ class door:
         self.size = size
         self.pos = pos
         self.Rect = pygame.rect(pos.x, pos.y, size.x, size.y)
+        self.open = False
+        self.tag = "Door"
     def collide(self, obj2):
         if self.Rect.colliderect(obj2.Rect):
             return True

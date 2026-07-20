@@ -4,6 +4,9 @@ import Gun
 import Sword
 class Realplayer:
     def __init__(self, speed, size, pos, health, GivenGun, GivenSword):
+       self.GivenGun = GivenGun
+       self.GivenSword = GivenSword
+       ChosenSword = Sword.WhichSword[GivenSword]
        ChosenGun = Gun.WhichGun[GivenGun]
        self.speed = speed
        self.size = pygame.Vector2(size)
@@ -13,9 +16,10 @@ class Realplayer:
        self.Maxhealth = health
        self.health = self.Maxhealth
        self.gun = ChosenGun((50, 20), GivenGun, pygame.mouse.get_pos(), self.pos, False)
-       self.Sword = Sword.RegularSword((100, 100), GivenSword, pygame.mouse.get_pos(), self.pos, False)
+       self.Sword = ChosenSword((100, 100), GivenSword, pygame.mouse.get_pos(), self.pos, False)
        self.inventory = []
        self.BannedDirections = []
+       self.tag = "Player"
     def update(self, screen, keys, dt, mousepos):
         self.move(keys, dt, self.speed)
         #for now keys will be passed in
