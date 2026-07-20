@@ -26,8 +26,9 @@ class bullet:
     def move(self, speed, dt, angle):
         #remember plus both will go bottom right
         self.pos += pygame.Vector2(math.cos(angle) * speed * dt, math.sin(angle)* dt * speed)
-    def draw(self, screen):
-        pygame.draw.circle(screen, "white", self.pos, self.size)
+    def draw(self, screen, camera):
+        screen_pos = camera.apply(self.pos)
+        pygame.draw.circle(screen, "white", screen_pos, self.size)
     def destroy(self):
         pass
     def update(self, dt, screen):
@@ -37,9 +38,7 @@ class bullet:
         if self.dircounter == 0:
             self.acute_rad = self.determinedir(self.targetpos)
             self.dircounter += 1
-        self.move(self.speed, dt, self.acute_rad)
-        self.draw(screen)
-        
+        self.move(self.speed, dt, self.acute_rad)        
         self.Rect = pygame.Rect(self.pos.x, self.pos.y, self.size, self.size)
     def Collision(self, obj2):
         if(self.Rect.colliderect(obj2.Rect)):
@@ -92,7 +91,6 @@ class Dynamite(bullet):
         if(self.TimerStarted):
             self.ExplosionTimer -= dt
         self.Rect = pygame.Rect(self.pos.x, self.pos.y, self.size, self.size)
-        self.draw(screen)
     def Collision(self, obj2):
         if self.ExplosionTimer <= 0:
             self.ResolveCollision( obj2)

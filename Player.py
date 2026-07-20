@@ -16,7 +16,7 @@ class Realplayer:
        self.Maxhealth = health
        self.health = self.Maxhealth
        self.gun = ChosenGun((50, 20), GivenGun, pygame.mouse.get_pos(), self.pos, False)
-       self.Sword = ChosenSword((100, 100), GivenSword, pygame.mouse.get_pos(), self.pos, False)
+       self.Sword = ChosenSword((40, 40), GivenSword, pygame.mouse.get_pos(), self.pos, False)
        self.inventory = []
        self.BannedDirections = []
        self.tag = "Player"
@@ -24,8 +24,12 @@ class Realplayer:
         self.move(keys, dt, self.speed)
         #for now keys will be passed in
         self.Rect = pygame.Rect( self.pos.x, self.pos.y, self.size[0], self.size[1])
-    def draw(self, screen):
-        pygame.draw.rect(screen, "green", self.Rect)
+    def draw(self, screen, camera):
+        if hasattr(self, "image"):
+            screen.blit( self.image, camera.apply(self.rect.topleft))
+        else:
+            pygame.draw.rect(screen, (0,255,0), camera.apply(self.Rect)
+            )
     def move(self, keys, dt, speed):
         if keys[pygame.K_w]:
             self.pos.y -= speed * dt

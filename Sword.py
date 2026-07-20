@@ -82,19 +82,21 @@ class RegularSword():
     def ResolveCollision(self, obj2, damage):
         if(obj2.tag == "Enemy"):
             obj2.TakeDamage(damage)#Parse enemy object itself not just the position
-    def draw(self, screen, size, position, Targetpos):
+    def draw(self, screen, camera, size, position):
         #pygame.draw.rect(screen, "red", (position[0],position[1], size[0], size[1]))
         angle_deg = math.degrees(self.acute_rad)
-
-        if not hasattr(self, "original_image"):
-            self.original_image = pygame.Surface(size, pygame.SRCALPHA)
+        
+        self.original_image = pygame.Surface(size, pygame.SRCALPHA)
         self.original_image.fill((0,0,0,0))
         if(self.Swinging):
             pygame.draw.rect(self.original_image, "red", (0, 0, size[0], size[1]))
         if(self.Parrying):
             pygame.draw.rect(self.original_image, "blue", (0, 0, size[0], size[1]))
         rotated_image = pygame.transform.rotate(self.original_image, angle_deg)
-        rect = rotated_image.get_rect(center=position)
+        screen_pos = camera.apply(pygame.Vector2(position))
+        rect = rotated_image.get_rect(center=screen_pos)
+        print(self.size)
+        print(rotated_image.get_size())
         screen.blit(rotated_image, rect)
     def SwingStateChange(self, dt):
         if(self.Swinging):
@@ -131,8 +133,7 @@ class RegularSword():
         if(self.CanParry(self.ParryCoolDownTimer) and not self.EnemyOwner and pygame.mouse.get_pressed()[2] and not self.Swinging and not self.Parrying):
             #we will make it always show but only play animations later
             self.Parry(self.pos, Targetpos)
-        if(self.Swinging or self.Parrying):
-            self.draw(screen, self.size, self.pos, self.Targetpos) #self.ParryRect,
+        #self.ParryRect,
 class VampireSword(RegularSword):
     def __init__(self, size,Name, Targetpos, position, Enemy):
         super().__init__( size,Name, Targetpos, position, Enemy)
@@ -149,12 +150,12 @@ class BaseballBat(RegularSword):
     def StartCharge(self):
         self.ChargeDuration = 0
         self.Charging = True
-    def draw(self, screen, size, position):
+    def draw(self, screen, camera, size, position):
+        
         #pygame.draw.rect(screen, "red", (position[0],position[1], size[0], size[1]))
         angle_deg = math.degrees(self.acute_rad)
 
-        if not hasattr(self, "original_image"):
-            self.original_image = pygame.Surface(size, pygame.SRCALPHA)
+        self.original_image = pygame.Surface(size, pygame.SRCALPHA)
         self.original_image.fill((0,0,0,0))
         if self.Charging:
                 pygame.draw.rect(self.original_image, "orange", (0, 0, size[0], size[1]))
@@ -165,7 +166,10 @@ class BaseballBat(RegularSword):
         elif self.Parrying:
             pygame.draw.rect(self.original_image, "blue", (0, 0, size[0], size[1]))        
         rotated_image = pygame.transform.rotate(self.original_image, angle_deg)
-        rect = rotated_image.get_rect(center=position)
+        screen_pos = camera.apply(pygame.Vector2(position))
+        rect = rotated_image.get_rect(center=screen_pos)
+        print(self.size)
+        print(rotated_image.get_size())
         screen.blit(rotated_image, rect)
         
     def update(self, dt, screen, keys, position, Targetpos):
@@ -192,7 +196,7 @@ class BaseballBat(RegularSword):
         if(self.CanParry(self.ParryCoolDownTimer) and not self.EnemyOwner and pygame.mouse.get_pressed()[2] and not self.Swinging and not self.Parrying):
             #we will make it always show but only play animations later
             self.Parry(self.pos, self.Targetpos)
-        self.draw(screen, self.size, self.pos)
+        #self.draw(screen, self.size, self.pos)
     def ResolveCollision(self, obj2, damage):
         if(obj2.tag == "Enemy"):
             KnockBackstrength = min(self.ChargeDuration / self.MaxChargeTime, 1)

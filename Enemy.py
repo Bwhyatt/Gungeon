@@ -80,10 +80,8 @@ class BaseEnemy:#Use generalisation to make a bunch of different enemies that ar
         pass
     def CanAttacK(self, player_pos):
         pass #This will check if there is nothin obstructing the enemy like a wall, if it is out of range or if the attack is on cooldown for melee attacks
-    def draw(self, screen):
-        pygame.draw.rect(screen, "red", self.Rect)
-        if self.ParryRect != None:
-            pygame.draw.rect(screen, "blue", self.ParryRect)
+    def draw(self, screen, camera):
+        pygame.draw.rect(screen,"red",camera.apply(self.Rect))
     def DetermineAction(self, dt, player_pos, ):
             if(self.CanMove):
                 self.Move(dt, player_pos, self.speed)

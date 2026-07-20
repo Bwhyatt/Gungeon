@@ -31,5 +31,5 @@ class TheWall():
         obj2.Rect.x = obj2.pos[0]
         obj2.Rect.y = obj2.pos[1]
     
-    def draw(self, screen):
-        pygame.draw.rect(screen, "white", self.Rect)
+    def draw(self, screen, camera):
+        pygame.draw.rect(screen,(100,100,100),camera.apply(self.Rect))

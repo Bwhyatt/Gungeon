@@ -3,23 +3,30 @@ import Player
 import Bullet
 import Wall
 import Enemy
+import Room
+import Camera
 pygame.init()
+Width = 1280
+Height = 720
 screen = pygame.display.set_mode((1280, 720))
 clock = pygame.time.Clock()
+EnemyClassmap = {cls.__name__: cls for cls in Enemy.BaseEnemy.__subclasses__()}
+EnemyClassmap["BaseEnemy"] = Enemy.BaseEnemy
 running = True
 dt = 0
 Enemies = []
 EnemyBullets = []
 myEnemy = Enemy.BaseEnemy(100, 50, (500, 500), (30, 30), "GunParent", "None")
-Enemy2 = Enemy.Shielder(100, 50, (200, 500), (30, 30), "None", "RegularSword")
+Enemy2 = Enemy.Shielder(100, 50, (200, 500), (30, 30), "GunParent", "RegularSword")
 Enemies.append(myEnemy)
 Enemies.append(Enemy2)
-SingleWall = Wall.TheWall((300, 300), (100, 100), 1)
 WallList = []
-WallList.append(SingleWall)
 #this will eventually be dependent on the room and it will just give us the list of enemies so it's fine to just hard code them for now
 Theplayer = Player.Realplayer(300, (32, 32), (100,100), 100,"Sniper", "BaseballBat")
+CurrentRoom = Room.TheRoom("TileRooms/1.tmx", EnemyClassmap)
+camera = Camera.Camera(Width, Height)
 while running:
+    CurrentRoom.EnemyList = Enemies# TBD REPLACE LATER
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -31,10 +38,10 @@ while running:
                 EnemyBullets.append(Enemies[i].bulletList[j]) 
                 
     screen.fill("purple")
-      
     Theplayer.update(screen, pygame.key.get_pressed(), dt, pygame.mouse.get_pos())
-    SingleWall.WallCollision(Theplayer)
-    Theplayer.draw(screen)
+    camera.update(Theplayer)
+    
+    
     Theplayer.gun.update(dt, screen, pygame.key.get_pressed(), Theplayer.pos, pygame.mouse.get_pos()) 
     if(Theplayer.GivenGun == "RailGun"):
          if(Theplayer.gun.Charging):
@@ -42,16 +49,22 @@ while running:
          else:
               Theplayer.gun.TheChargeRay = None
     Theplayer.Sword.update(dt, screen, pygame.key.get_pressed(), Theplayer.pos, pygame.mouse.get_pos())
-    SingleWall.WallCollision(Theplayer)
+
+    print(CurrentRoom.WallList)
+    WallList = CurrentRoom.WallList
+
+
+    for i in range(len(WallList)):
+         WallList[i].WallCollision(Theplayer)
 
     for i in range(len(Enemies)):
         Enemies[i].update(dt, Theplayer.pos, Theplayer.gun.bulletList, screen)
-        SingleWall.WallCollision(Enemies[i])
-        Enemies[i].draw(screen)
-        if(Enemies[i].Collision(SingleWall)):
-             Enemies[i].ResolveCollision(SingleWall)
+        for j in range(len(WallList)):
+            WallList[j].WallCollision(Enemies[i])
+            if(Enemies[i].Collision(WallList[j])):
+                Enemies[i].ResolveCollision(WallList[j])
         if Enemies[i].UsesGun:
-             Enemies[i].gun.update(dt, screen, pygame.key.get_pressed(), myEnemy.pos, Theplayer.pos)
+             Enemies[i].gun.update(dt, screen, pygame.key.get_pressed(), Enemies[i].pos, Theplayer.pos)
         if(Enemies[i].UsesSword):
              Enemies[i].Sword.update(dt, screen, pygame.key.get_pressed(), myEnemy.pos, Theplayer.pos)
              if(Enemies[i].Sword.Collision(Theplayer)):
@@ -64,18 +77,33 @@ while running:
                   Theplayer.Sword.ResolveParryCollision(Enemies[i])
                   if(Theplayer.Sword == "Vampire"):
                        Theplayer.health += Theplayer.sword.RegenAmount if Theplayer.health + Theplayer.sword.RegenAmount < Theplayer.MaxHealth else Theplayer.MaxHealth
-    SingleWall.draw(screen)
+    
+    
+    #if(self.Swinging or self.Parrying):
+    
+    
+    CurrentRoom.draw(screen, camera)
     #player bullet list and enemy bullet list
     for bullet in Theplayer.gun.bulletList:
         bullet.update(dt, screen)
-        if(bullet.Collision(SingleWall)):
-             bullet.ResolveCollision(SingleWall)
-    for bullet in EnemyBullets:
-         bullet.update(dt, screen)
-         if bullet.Collision(Theplayer):
-            bullet.ResolveCollision(Theplayer)
-    Theplayer.draw(screen)
 
+        bullet.draw(screen, camera)
+
+        for wall in WallList:
+            if bullet.Collision(wall):
+                bullet.ResolveCollision(wall)
+    for bullet in EnemyBullets:
+        bullet.update(dt, screen)
+        bullet.draw(screen, camera)
+        if bullet.Collision(Theplayer):
+            bullet.ResolveCollision(Theplayer)
+        for wall in WallList:
+            if bullet.Collision(wall):
+                bullet.ResolveCollision(wall)
+            
+    Theplayer.draw(screen, camera)
+    Theplayer.gun.draw(screen,camera,Theplayer.gun.size,Theplayer.pos)
+    Theplayer.Sword.draw(screen,camera,Theplayer.Sword.size,Theplayer.pos)
     pygame.display.flip()
 
     dt = clock.tick(60) / 1000

@@ -4,7 +4,7 @@ import math
 import Bullet
 class GunParent:
     def __init__(self, size, gunName, Targetpos, position, Enemy):
-        self.size = size
+        self.size = pygame.Vector2(size)
         #gunName will be used later when i design other guns
         self.pos = pygame.Vector2(position)
         self.Targetpos = pygame.Vector2(Targetpos)
@@ -53,7 +53,7 @@ class GunParent:
         else:
             #print("cant shoot")
             pass
-    def draw(self, screen, size, position, Targetpos):
+    def draw(self, screen, camera, size, position):
         #pygame.draw.rect(screen, "red", (position[0],position[1], size[0], size[1]))
         self.acute_rad_deg = math.degrees(self.acute_rad)
 
@@ -63,7 +63,8 @@ class GunParent:
             pygame.draw.rect(self.original_image, "red", (0, 0, size[0], size[1]))
 
         rotated_image = pygame.transform.rotate(self.original_image, self.acute_rad_deg)
-        rect = rotated_image.get_rect(center=position)
+        screen_pos = camera.apply(pygame.Vector2(position))
+        rect = rotated_image.get_rect(center=screen_pos)
         screen.blit(rotated_image, rect)
     
     def update(self, dt, screen, keys, position, Targetpos):
@@ -87,7 +88,7 @@ class GunParent:
 
         self.pos = pygame.Vector2(position)
         #make position player position
-        self.draw(screen, self.size, (self.pos.x, self.pos.y), self.Targetpos)
+        #self.draw(screen, self.size, (self.pos.x, self.pos.y), self.Targetpos)
 
 class Shotgun(GunParent):
     def __init__(self, size, GunName, Targetpos, position, Enemy):
@@ -179,7 +180,7 @@ class Sniper(GunParent):
             for wall in WallList:
                 if wall.Rect.collidepoint(cur_x, cur_y):
                     return (int(cur_x), int(cur_y))
-    def draw(self, screen, size, position):
+    def draw(self, screen, camera, size, position):
         self.acute_rad_deg = math.degrees(self.acute_rad)
 
         # Build the original, unrotated rectself.acute_rad once and cache it
@@ -201,7 +202,8 @@ class Sniper(GunParent):
                     )
                     screen.blit(rotated_ray, ray_rect)       
         rotated_image = pygame.transform.rotate(self.original_image, self.acute_rad_deg)
-        rect = rotated_image.get_rect(center=position)
+        screen_pos = camera.apply(pygame.Vector2(position))
+        rect = rotated_image.get_rect(center=screen_pos)
         screen.blit(rotated_image, rect)
         
     def update(self, dt, screen, keys, position, Targetpos):
@@ -240,7 +242,7 @@ class Sniper(GunParent):
             if(self.CanShoot(self.ammo, self.fireratetimer)):
                 self.shoot(self.pos, self.Targetpos, 20)
 
-        self.draw(screen, self.size, self.pos)
+        #self.draw(screen, self.size, self.pos)
 def rotate_around_pivot(image, angle_deg, pivot_on_sprite, pivot_on_screen):
         w, h = image.get_size()
         center = pygame.Vector2(w / 2, h / 2)
@@ -274,7 +276,7 @@ class ChargeGun(GunParent):
             bullet1 = Bullet.bullet(20, "circle", 500, Targetpos, position, damage)
             self.bulletList.append(bullet1)
 
-    def draw(self, screen, size, position, Targetpos):
+    def draw(self, screen, camera, size, position):
         self.acute_rad_deg = math.degrees(self.acute_rad)
 
         if not hasattr(self, "original_image"):
@@ -299,7 +301,8 @@ class ChargeGun(GunParent):
         pygame.draw.rect(self.original_image, colour, (0,0,size[0],size[1]))
 
         rotated_image = pygame.transform.rotate(self.original_image, self.acute_rad_deg)
-        rect = rotated_image.get_rect(center=position)
+        screen_pos = camera.apply(pygame.Vector2(position))
+        rect = rotated_image.get_rect(center=screen_pos)
         screen.blit(rotated_image, rect)
 
     def update(self, dt, screen, keys, position, Targetpos):
@@ -344,4 +347,4 @@ class ChargeGun(GunParent):
             self.Charging = False
             self.ChargeDuration = 0
 
-        self.draw(screen, self.size, self.pos, self.Targetpos)
+        #self.draw(screen, self.size, self.pos, self.Targetpos)
