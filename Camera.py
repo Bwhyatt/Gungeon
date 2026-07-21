@@ -15,3 +15,5 @@ class Camera:
             return target.move(-self.offset.x, -self.offset.y)
 
         return target - self.offset
+    def reverse(self, pos):
+        return pygame.Vector2(pos) + self.offset

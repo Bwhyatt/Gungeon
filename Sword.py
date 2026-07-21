@@ -1,9 +1,30 @@
 import pygame
 import math
+import os
+def rotate_around_pivot(image, angle_deg, pivot_on_sprite, pivot_on_screen):
+    w, h = image.get_size()
+    center = pygame.Vector2(w / 2, h / 2)
+    offset = pivot_on_sprite - center
+    rotated_offset = offset.rotate(-angle_deg)
+    rotated_image = pygame.transform.rotate(image, angle_deg)
+    new_center = pivot_on_screen - rotated_offset
+    rect = rotated_image.get_rect(center=new_center)
+    return rotated_image, rect
+
+
 class RegularSword():
     def __init__(self, size,Name, Targetpos, position, Enemy):
-        
         #gunName will be used later when i design other guns
+        self.size = pygame.Vector2(size)
+
+        sprite_path = f"SpriteSheets/Swords/{Name}.png"
+        if os.path.exists(sprite_path):
+            self.OriginalImage = pygame.image.load(sprite_path).convert_alpha()
+            self.OriginalImage = pygame.transform.scale(self.OriginalImage, self.size)
+        else:
+            self.OriginalImage = self._make_placeholder_sprite()  # fallback until the png exists
+
+        self.PivotOnSprite = pygame.Vector2(self.size.x * 0.15, self.size.y / 2)
         self.pos = pygame.Vector2(position)
         self.Targetpos = pygame.Vector2(Targetpos)
         self.upY = 1 if self.Targetpos.y > self.pos.y else -1
@@ -30,12 +51,35 @@ class RegularSword():
         self.Rect = None
         self.Swinging = False
 
-        self.damage = 20
+        self.damage = 50
         
         self.size = pygame.Vector2(size)
+        
+        self.PivotOnSprite = pygame.Vector2(self.size.x * 0.15, self.size.y / 2)  # hand grip, near left edge of the sprite
+
+        self.SwingStartAngle = -70   # degrees, wound-up, relative to aim direction
+        self.SwingEndAngle = 40      # degrees, follow-through
+        self.ParryStartAngle = -25   # degrees, parry sweep start
+        self.ParryEndAngle = 25      # degrees, parry sweep end
+        self.CurrentAngleOffset = self.SwingStartAngle
+        self.tag = "Sword"
+        if self.SwingTimer <= 0:
+            self.SwingTimer = 0.25
+    def _make_placeholder_sprite(self):
+        surf = pygame.Surface(self.size, pygame.SRCALPHA)
+        pygame.draw.rect(surf, "red", (0, 0, self.size.x, self.size.y))
+        return surf
+    def _draw_rotated(self, screen, camera, position, angle_offset):
+        angle_deg = math.degrees(self.acute_rad) + angle_offset
+        screen_pos = pygame.Vector2(camera.apply(pygame.Vector2(position)))
+        rotated_image, rect = rotate_around_pivot(
+            self.OriginalImage, angle_deg, self.PivotOnSprite, screen_pos
+        )
+        screen.blit(rotated_image, rect)
     def Swing(self, position, Targetpos=None):
         self.Swinging = True
-        
+        self.SwingDuration = 0
+        self.CurrentAngleOffset = self.SwingStartAngle#reset the angle for rotation
         if(Targetpos != None):
             self.Targetpos = pygame.Vector2(Targetpos)
         self.pos = pygame.Vector2(position)
@@ -46,7 +90,9 @@ class RegularSword():
         self.Mask = pygame.mask.from_surface(self.Image)
     def Parry(self, position, Targetpos):
             self.Parrying = True
-            self.ParryRect = pygame.Rect(position[0], position [1], self.size[0] * 2, self.size[1] * 2)
+            self.ParryDuration = 0
+            self.CurrentAngleOffset = self.ParryStartAngle
+            self.ParryRect = pygame.Rect(position[0], position[1], self.size[0] * 2, self.size[1] * 2)
     def determinedir(self, Targetpos):
         acute_rad = math.atan2((self.pos.y - Targetpos.y ) , (Targetpos.x - self.pos.x))
         return acute_rad
@@ -84,23 +130,13 @@ class RegularSword():
             obj2.TakeDamage(damage)#Parse enemy object itself not just the position
     def draw(self, screen, camera, size, position):
         #pygame.draw.rect(screen, "red", (position[0],position[1], size[0], size[1]))
-        angle_deg = math.degrees(self.acute_rad)
-        
-        self.original_image = pygame.Surface(size, pygame.SRCALPHA)
-        self.original_image.fill((0,0,0,0))
-        if(self.Swinging):
-            pygame.draw.rect(self.original_image, "red", (0, 0, size[0], size[1]))
-        if(self.Parrying):
-            pygame.draw.rect(self.original_image, "blue", (0, 0, size[0], size[1]))
-        rotated_image = pygame.transform.rotate(self.original_image, angle_deg)
-        screen_pos = camera.apply(pygame.Vector2(position))
-        rect = rotated_image.get_rect(center=screen_pos)
-        print(self.size)
-        print(rotated_image.get_size())
-        screen.blit(rotated_image, rect)
+        if self.Swinging or self.Parrying:
+            self._draw_rotated(screen, camera, position, self.CurrentAngleOffset)
     def SwingStateChange(self, dt):
         if(self.Swinging):
             self.SwingDuration += dt
+            progress = min(self.SwingDuration / self.SwingTimer, 1) if self.SwingTimer > 0 else 1
+            self.CurrentAngleOffset = self.SwingStartAngle + (self.SwingEndAngle - self.SwingStartAngle) * progress
             if(self.SwingDuration >= self.SwingTimer):
                 self.SwingDuration = 0
                 self.Swinging = False
@@ -151,26 +187,10 @@ class BaseballBat(RegularSword):
         self.ChargeDuration = 0
         self.Charging = True
     def draw(self, screen, camera, size, position):
-        
-        #pygame.draw.rect(screen, "red", (position[0],position[1], size[0], size[1]))
-        angle_deg = math.degrees(self.acute_rad)
-
-        self.original_image = pygame.Surface(size, pygame.SRCALPHA)
-        self.original_image.fill((0,0,0,0))
         if self.Charging:
-                pygame.draw.rect(self.original_image, "orange", (0, 0, size[0], size[1]))
-
-        elif self.Swinging:
-            pygame.draw.rect(self.original_image, "red", (0, 0, size[0], size[1]))
-
-        elif self.Parrying:
-            pygame.draw.rect(self.original_image, "blue", (0, 0, size[0], size[1]))        
-        rotated_image = pygame.transform.rotate(self.original_image, angle_deg)
-        screen_pos = camera.apply(pygame.Vector2(position))
-        rect = rotated_image.get_rect(center=screen_pos)
-        print(self.size)
-        print(rotated_image.get_size())
-        screen.blit(rotated_image, rect)
+            self._draw_rotated(screen, camera, position, self.SwingStartAngle)
+        elif self.Swinging or self.Parrying:
+            self._draw_rotated(screen, camera, position, self.CurrentAngleOffset)
         
     def update(self, dt, screen, keys, position, Targetpos):
         self.SwingStateChange(dt)

@@ -13,6 +13,8 @@ class bullet:
         self.tag = "Bullet"
         self.lifetime = 0
         self.BannedDirections = []
+        self.image = pygame.image.load("Bullet.png").convert_alpha()
+        self.image = pygame.transform.scale(self.image, (self.size * 2, self.size * 2))
     def determinedir(self, targetpos):
        #since the up is reversed and down for me on the screen is up which is the opposite on num plane so needs to be self 1 for rise
         
@@ -28,11 +30,13 @@ class bullet:
         self.pos += pygame.Vector2(math.cos(angle) * speed * dt, math.sin(angle)* dt * speed)
     def draw(self, screen, camera):
         screen_pos = camera.apply(self.pos)
-        pygame.draw.circle(screen, "white", screen_pos, self.size)
+        rect = self.image.get_rect(center=screen_pos)
+        screen.blit(self.image, rect)
     def destroy(self):
-        pass
+        self.dead = True
     def update(self, dt, screen):
         self.BannedDirections = []
+        self.lifetime += dt
         if(self.lifetime > 7):
             self.destroy()
         if self.dircounter == 0:

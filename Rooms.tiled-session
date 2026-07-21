@@ -3,22 +3,207 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "",
+    "activeFile": "TileRooms/1.tmx",
     "expandedProjectPaths": [
+        "TileRooms",
+        "."
     ],
     "file.lastUsedOpenFilter": "All Files (*)",
     "fileStates": {
+        "3.tmx": {
+            "scale": 0.46609375,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 639.3563526651022,
+                "y": 640.4290982232652
+            }
+        },
+        "C:/Users/brand/Documents/SoftwareY11/FinalRoomTileset.tsx": {
+            "scaleInDock": 1
+        },
+        "FinalRoomTileset.tsx": {
+            "scaleInDock": 1
+        },
         "RoomTileSet.tsx": {
             "scaleInDock": 1,
             "scaleInEditor": 1
+        },
+        "TileRooms/0.tmx": {
+            "expandedObjectLayers": [
+                3
+            ],
+            "scale": 0.75,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 647.9999999999999,
+                "y": 583.3333333333333
+            }
+        },
+        "TileRooms/1.tmx": {
+            "expandedObjectLayers": [
+                2
+            ],
+            "scale": 1,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 601,
+                "y": 768.5
+            }
+        },
+        "TileRooms/10.tmx": {
+            "expandedObjectLayers": [
+                3
+            ],
+            "scale": 1.5,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 429.33333333333337,
+                "y": 793.6666666666666
+            }
+        },
+        "TileRooms/11.tmx": {
+            "expandedObjectLayers": [
+                2
+            ],
+            "scale": 1.5,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 648,
+                "y": 663.6666666666666
+            }
+        },
+        "TileRooms/12.tmx": {
+            "expandedObjectLayers": [
+                3
+            ],
+            "scale": 1,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 646,
+                "y": 808.5
+            }
+        },
+        "TileRooms/2.tmx": {
+            "expandedObjectLayers": [
+                3
+            ],
+            "scale": 0.75,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 694.6666666666667,
+                "y": 725.9999999999999
+            }
+        },
+        "TileRooms/3.tmx": {
+            "expandedObjectLayers": [
+                2
+            ],
+            "scale": 4,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 400,
+                "y": 647.875
+            }
+        },
+        "TileRooms/4.tmx": {
+            "expandedObjectLayers": [
+                4
+            ],
+            "scale": 0.5,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 294,
+                "y": 373
+            }
+        },
+        "TileRooms/5.tmx": {
+            "expandedObjectLayers": [
+                3
+            ],
+            "scale": 1,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 544,
+                "y": 736.5
+            }
+        },
+        "TileRooms/6.tmx": {
+            "expandedObjectLayers": [
+                3
+            ],
+            "scale": 0.75,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 626.6666666666667,
+                "y": 564.6666666666667
+            }
+        },
+        "TileRooms/7.tmx": {
+            "expandedObjectLayers": [
+                3
+            ],
+            "scale": 0.5,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 370,
+                "y": 1057
+            }
+        },
+        "TileRooms/8.tmx": {
+            "expandedObjectLayers": [
+                3
+            ],
+            "scale": 0.75,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 547.9999999999999,
+                "y": 631.3333333333333
+            }
+        },
+        "TileRooms/9.tmx": {
+            "expandedObjectLayers": [
+                3
+            ],
+            "scale": 3,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 736.3333333333333,
+                "y": 811.1666666666666
+            }
         }
     },
+    "last.externalTilesetPath": "C:/Users/brand/Documents/SoftwareY11/Gungeon",
     "last.imagePath": "C:/Users/brand/Documents/SoftwareY11/Gungeon",
+    "map.height": 40,
+    "map.lastUsedFormat": "tmx",
+    "map.width": 40,
     "openFiles": [
+        "TileRooms/2.tmx",
+        "TileRooms/4.tmx",
+        "TileRooms/5.tmx",
+        "TileRooms/7.tmx",
+        "TileRooms/8.tmx",
+        "TileRooms/9.tmx",
+        "TileRooms/10.tmx",
+        "TileRooms/1.tmx",
+        "TileRooms/3.tmx",
+        "TileRooms/6.tmx"
     ],
     "project": "Rooms.tiled-project",
     "recentFiles": [
+        "TileRooms/1.tmx",
+        "TileRooms/2.tmx",
+        "TileRooms/4.tmx",
+        "TileRooms/5.tmx",
+        "TileRooms/7.tmx",
+        "TileRooms/8.tmx",
+        "TileRooms/9.tmx",
+        "TileRooms/10.tmx",
+        "TileRooms/6.tmx",
+        "TileRooms/3.tmx",
+        "3.tmx",
         "RoomTileSet.tsx"
     ],
+    "tileset.lastUsedFilter": "Tiled tileset files (*.tsx *.xml)",
     "tileset.lastUsedFormat": "tsx"
 }
