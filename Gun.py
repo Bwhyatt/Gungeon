@@ -14,14 +14,14 @@ class GunParent:
         #counts up if direction has been determined every frame
         self.ammo = 10
         self.capacity = 10
-        self.fireRate = 0.5
+        self.fireRate = 1.3
         self.fireratetimer = 0 # timer to basically act as firerate checker
         self.EnemyOwner = Enemy # checks if this is the player's gun or the enemy's
         #reload variables
         self.reloadTime = 2
         self.reloadpressed = False
         self.reloadtimer = self.reloadTime
-
+        self.damage = 20
         self.bulletList = []
 
         self.bulletsPershot = 1
@@ -88,7 +88,7 @@ class GunParent:
             #print("shooting")
             self.ammo -= 1
             self.fireratetimer = self.fireRate
-            bullet1 = Bullet.bullet(20, "circle", 500, Targetpos, position, damage)
+            bullet1 = Bullet.bullet(7, "circle", 500, Targetpos, position, damage)
             self.bulletList.append(bullet1)
             self.current_animation = "shoot"
             self.frame_index = 0
@@ -153,10 +153,12 @@ class GunParent:
 class Shotgun(GunParent):
     def __init__(self, size, GunName, Targetpos, position, Enemy):
         super().__init__(size, GunName, Targetpos, position, Enemy)
+        self.damage = 12
         self.ammo = 6
         self.capacity = 6
         self.fireRate = 1.2
         self.bulletsPershot = 6
+        self.damage = 10
         self.spread = math.radians(32)
     def shoot(self, position, Targetpos, damage):
         self.StartShootAnimation()
@@ -185,14 +187,7 @@ class Shotgun(GunParent):
                 position[1] - math.sin(shot_angle) * 500
             )
 
-            bullet = Bullet.bullet(
-                20,
-                "circle",
-                500,
-                pellet_target,
-                position,
-                damage
-            )
+            bullet = Bullet.bullet(7, "circle", 500, pellet_target, position, self.damage )
 
             self.bulletList.append(bullet)
                 #print("Shot one")
@@ -204,7 +199,6 @@ class BallGun(GunParent):
         self.capacity = 10
         self.fireRate = 0.5
         self.bulletsPershot = 1
-        self.spread = math.radians(32)
         self.BulletType = "Bouncy"
     def shoot(self, position, Targetpos, damage):
         ChosenBullet = Bullet.WhichBullet[self.BulletType]
@@ -235,6 +229,7 @@ class Dynamite(GunParent):
 class Sniper(GunParent):
     def __init__(self, size, GunName, Targetpos, position, Enemy):
         super().__init__(size, GunName, Targetpos, position, Enemy)
+        self.damage = 150
         self.ammo = 1
         self.capacity = 1
         self.fireRate = 1
@@ -262,7 +257,7 @@ class Sniper(GunParent):
             self.ammo -= 1
             self.fireratetimer = self.fireRate
             ChargePercent = self.ChargeDuration / self.MaxChargeTime
-            damage = 20 + (80 * ChargePercent)
+            damage = self.damage + (80 * ChargePercent)
             bullet1 = Bullet.bullet(20, "Rail", 2000, Targetpos, position, damage)
             self.bulletList.append(bullet1)
     def MakeChargeRay(self, WallList, screen):
@@ -299,8 +294,11 @@ class Sniper(GunParent):
                     # pivot = the left middle edge of the ray surface i.e. where the
                     # beam starts, not the surface's center
                     pivot_on_sprite = pygame.Vector2(0, ray_thickness / 2)
-                    rotated_ray, ray_rect = rotate_around_pivot( ray_surface, self.angle, pivot_on_sprite, self.pos)
-                    screen.blit(rotated_ray, ray_rect)       
+                    screen_pos = camera.apply(self.pos)
+
+                    rotated_ray, ray_rect = rotate_around_pivot(ray_surface, self.angle, pivot_on_sprite, screen_pos)
+
+                    screen.blit(rotated_ray, ray_rect)
         rotated_image = pygame.transform.rotate(self.original_image, self.angle)
         screen_pos = camera.apply(pygame.Vector2(position))
         rect = rotated_image.get_rect(center=screen_pos)
@@ -462,13 +460,13 @@ class ChargeGun(GunParent):
                 self.charge_frame = 0
         if(self.Charging and not pygame.mouse.get_pressed()[0]):
             if(self.ChargeDuration >= self.Stage4Threshold):
-                damage = 60
+                damage = 150
             elif(self.ChargeDuration >= self.Stage3Threshold):
-                damage = 40
+                damage = 90
             elif(self.ChargeDuration >= self.Stage2Threshold):
-                damage = 30
+                damage = 70
             elif(self.ChargeDuration >= self.Stage1Threshold):
-                damage = 20
+                damage = 50
             else:
                 damage = 10
 

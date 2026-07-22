@@ -7,12 +7,18 @@ from pathlib import Path
 import EnemyStats
 
 class TheRoom:
+    # Represents a single dungeon room.
+    # Loads the room layout from a Tiled (.tmx) file and manages
+    # the walls, doors, enemies and room transitions.
     def __init__(self, RoomFile, ClassMap, coord=None, door_directions=None, RoomRegistry=None):
+        # RoomFile: location of the Tiled map file
+        # ClassMap: dictionary converting enemy names into Python classes
+        # RoomRegistry: shared dictionary containing all generated rooms
         self.RoomFile = RoomFile
         self.ClassMap = ClassMap
         self.EnemyList = []
         self.WallList = []
-        self.DoorList = []
+        self.DoorList = []# Stores all interactive objects belonging to this room.
         self.Cleared = False
         self.coord = coord
         self.door_directions = door_directions or {}   # {direction: neighbor_coord}
@@ -20,14 +26,18 @@ class TheRoom:
 
         stem = Path(self.RoomFile).stem
         self.RoomNum = int(stem) if stem.isdigit() else stem
+        # Extracts the room identifier from the filename.
+        # Used to identify the room when creating walls and debugging.
         self.LoadRoom()
 
     def LoadRoom(self):
+        # Reads the Tiled map and converts placed objects into game objects.
+        # Objects are identified using their Tiled tags.
         print("This number  is " + str(self.RoomNum))
         self.tmx_data = pytmx.load_pygame(self.RoomFile)
         room_w = self.tmx_data.width * self.tmx_data.tilewidth
         room_h = self.tmx_data.height * self.tmx_data.tileheight
-
+        # Every object placed in Tiled is converted into the corresponding game object
         for obj in self.tmx_data.objects:
             if obj.Tag.upper() == "Wall".upper():
                 self.WallList.append(Wall.TheWall((obj.x, obj.y), (obj.width, obj.height), self.RoomNum))
@@ -35,6 +45,8 @@ class TheRoom:
             elif obj.Tag.upper() == "Door".upper():
                 center_x, center_y = room_w / 2, room_h / 2
                 dx, dy = obj.x - center_x, obj.y - center_y
+                # Determines the door direction by comparing its position
+                # relative to the room centre
                 direction = (2 if dx > 0 else 4) if abs(dx) > abs(dy) else (3 if dy > 0 else 1)
                 self.DoorList.append(door.door((obj.x, obj.y), (obj.width, obj.height), direction))
 
@@ -42,7 +54,7 @@ class TheRoom:
                 EnemyName = obj.properties["Enemy"]
 
                 stats = EnemyStats.EnemyStats[EnemyName]
-
+                # Gets the predefined stats for this enemy type.
                 NewEnemy = self.ClassMap[EnemyName](
                     stats["health"],
                     stats["speed"],
@@ -51,10 +63,11 @@ class TheRoom:
                     stats["gun"],
                     stats["sword"]
                 )
-
+                # Dynamically creates the correct enemy class using the name from Tiled.
+                # This allows new enemies to be added without modifying room loading.
                 self.EnemyList.append(NewEnemy)
 
-    def LinkDoors(self):
+    def LinkDoors(self): # Connects each door to the room it leads to after the dungeon has been generated.
         for d in self.DoorList:
             neighbor_coord = self.door_directions.get(d.direction)
             if (neighbor_coord is not None):

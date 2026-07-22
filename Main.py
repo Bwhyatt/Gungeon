@@ -15,23 +15,29 @@ Width = 1280
 Height = 720
 screen = pygame.display.set_mode((Width, Height))
 clock = pygame.time.Clock()
-
+# Initialises pygame and creates the main game window.
+# The clock is used to control frame timing and calculate delta time.
 GAME_STATE = "title"
 Theplayer = None
 SelectedGun = None
 SelectedSword = None
 dt = 0
 EnemyBullets = []
+# Global variables that persist between menu screens and gameplay.
+# The player is created only after weapon selection is confirmed.
 
 def all_subclasses(cls):
     subclasses = set(cls.__subclasses__())
     for sub in cls.__subclasses__():
         subclasses |= all_subclasses(sub)
     return subclasses
+# Recursively collects every enemy class that inherits from BaseEnemy.
+# This allows new enemies to be added without manually updating the class map.
 
 EnemyClassmap = {cls.__name__: cls for cls in all_subclasses(Enemy.BaseEnemy)}
 EnemyClassmap["BaseEnemy"] = Enemy.BaseEnemy
-
+# Creates a lookup table where the enemy name stored in Tiled
+# can be converted into the correct Python class.
 RoomRegistry, CurrentRoom = DungeonBuilder.build_dungeon(EnemyClassmap)
 camera = Camera.Camera(Width, Height)
 
@@ -61,7 +67,7 @@ def draw_text(surface, text, pos, size=30):
     image = font.render(text, True, "white")
     surface.blit(image, pos)
 
-def draw_hud():
+def draw_hud():#the game ui for when you're actually in the dungeon
     if Theplayer is None:
         return
 
@@ -113,6 +119,8 @@ gun_index = 0
 sword_index = 0
 
 def start_game():
+    # Creates the player using the currently selected weapons
+    # and transitions from the menu into gameplay.
     global Theplayer, SelectedGun, SelectedSword, GAME_STATE
 
     SelectedGun = gun_options[gun_index]
@@ -129,14 +137,14 @@ def start_game():
 
     GAME_STATE = "playing"
 
-def next_gun():
+def next_gun():#will sort of scroll through the guns
     global gun_index
     gun_index += 1
 
     if gun_index >= len(gun_options):
         gun_index = 0
 
-def next_sword():
+def next_sword():#will sort of scroll through the swords
     global sword_index
     sword_index += 1
 
@@ -164,7 +172,7 @@ def draw_title():
     draw_text(screen, "DUNGEON CRAWLER", (450, 150), 60)
     start_button.draw(screen)
 
-def draw_weapon_select():
+def draw_weapon_select():#creates the loadout selection ui
     draw_text(screen, "SELECT YOUR LOADOUT", (420, 150), 50)
 
     gun_name = gun_options[gun_index]
@@ -190,7 +198,7 @@ def draw_game_over():
 
 running = True
 
-while running:
+while running:#main game loop
     keys = pygame.key.get_pressed()
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -217,9 +225,11 @@ while running:
         for enemy in Enemies:
             for bullet in enemy.bulletList:
                 EnemyBullets.append(bullet)
+            
         Theplayer.update(screen, keys, dt, pygame.mouse.get_pos())
         camera.update(Theplayer)
         mouse_world = camera.reverse(pygame.mouse.get_pos())
+
         if Theplayer.weapon_mode == "gun":
             Theplayer.gun.update(dt, screen, keys, pygame.Vector2(Theplayer.pos[0] + Theplayer.size[0]/2,Theplayer.pos[1] + Theplayer.size[1]/2),  mouse_world)
         if Theplayer.weapon_mode == "sword":
@@ -238,34 +248,44 @@ while running:
         if new_room:
             CurrentRoom = new_room
             Theplayer.Room = CurrentRoom
+        
+        CurrentRoom.draw(screen, camera)
         for enemy in Enemies:
             if enemy.dead:
                 continue
             for bullet in Theplayer.gun.bulletList:
                 if enemy.Collision(bullet):
                     enemy.ResolveCollision(bullet)
-            enemy.update(dt, Theplayer.pos, Theplayer.gun.bulletList, screen)
+            enemy.update(dt, Theplayer.pos, Theplayer.gun.bulletList, screen, Theplayer)
             for wall in WallList:
                 wall.WallCollision(enemy)
                 if enemy.Collision(wall):
                     enemy.ResolveCollision(wall)
             if enemy.UsesGun:
-                enemy.gun.update(dt, screen, keys, enemy.pos, Theplayer.pos)
+                enemy.gun.update(dt, screen, keys, pygame.Vector2(enemy.pos[0] + enemy.size[0]/2, enemy.pos[1] + enemy.size[1]/2), Theplayer.pos)
+                enemy.bulletList = enemy.gun.bulletList
+                enemy.gun.draw(screen, camera, enemy.gun.size, enemy.pos)
             if enemy.UsesSword:
-                enemy.Sword.update(dt, screen, keys, enemy.pos, Theplayer.pos)
+                enemy.Sword.draw(screen, camera, enemy.Sword.size, enemy.pos)
+
                 if enemy.Sword.Collision(Theplayer):
-                    enemy.Sword.ResolveCollision(Theplayer, enemy.Sword.damage)
+                    enemy.Sword.ResolveCollision(
+                        Theplayer,
+                        enemy.Sword.damage
+                    )
+
             if Theplayer.weapon_mode == "sword":
-                if Theplayer.Sword.Swinging:
-                    if Theplayer.Sword.Collision(enemy):
-                        Theplayer.Sword.ResolveCollision(enemy, Theplayer.Sword.damage)
+                if Theplayer.Sword.Collision(enemy):
+                    Theplayer.Sword.ResolveCollision(
+                        enemy,
+                        Theplayer.Sword.damage
+                    )
                 if enemy.Parryable and Theplayer.Sword.Parrying:
                     if Theplayer.Sword.ParryCollision(enemy):
                         Theplayer.Sword.ResolveParryCollision(enemy)
 
         Theplayer.gun.bulletList = [b for b in Theplayer.gun.bulletList if not getattr(b, "dead", False)]
-
-        CurrentRoom.draw(screen, camera)
+        # Removes bullets marked as dead after collisions.
 
         for bullet in Theplayer.gun.bulletList:
             bullet.update(dt, screen)
@@ -302,6 +322,6 @@ while running:
 
     pygame.display.flip()
 
-    dt = clock.tick(60) / 1000
+    dt = clock.tick(60) / 1000 # Converts frame time into seconds so movement and animations are frame-rate independent.
 
 pygame.quit()

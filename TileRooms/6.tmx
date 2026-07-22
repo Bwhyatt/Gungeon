@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="40" height="40" tilewidth="32" tileheight="32" infinite="0" nextlayerid="6" nextobjectid="16">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="40" height="40" tilewidth="32" tileheight="32" infinite="0" nextlayerid="6" nextobjectid="18">
  <tileset firstgid="1" source="../FinalRoomTileset.tsx"/>
  <layer id="1" name="Tile Layer 1" width="40" height="40">
   <data encoding="csv">
@@ -141,6 +141,18 @@
   <object id="15" x="593.333" y="540" width="32" height="32">
    <properties>
     <property name="Enemy" value="PinBaller"/>
+    <property name="Tag" value="Enemy"/>
+   </properties>
+  </object>
+  <object id="16" x="462.667" y="732">
+   <properties>
+    <property name="Enemy" value="Shielder"/>
+    <property name="Tag" value="Enemy"/>
+   </properties>
+  </object>
+  <object id="17" x="331" y="585" width="32" height="32">
+   <properties>
+    <property name="Enemy" value="BaseEnemy"/>
     <property name="Tag" value="Enemy"/>
    </properties>
   </object>

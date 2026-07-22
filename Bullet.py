@@ -15,18 +15,11 @@ class bullet:
         self.BannedDirections = []
         self.image = pygame.image.load("Bullet.png").convert_alpha()
         self.image = pygame.transform.scale(self.image, (self.size * 2, self.size * 2))
+        self.dead = False
     def determinedir(self, targetpos):
-       #since the up is reversed and down for me on the screen is up which is the opposite on num plane so needs to be self 1 for rise
-        
-        #print("targetpos is " + str(targetpos))
-        #print("self pos is " + str(self.pos))
-
         acute_rad = math.atan2((targetpos[1] - self.pos[1]), (targetpos[0] - self.pos[0]))
-
-        #print("acutesef sjdfjse " + str(acute_rad))
         return acute_rad
     def move(self, speed, dt, angle):
-        #remember plus both will go bottom right
         self.pos += pygame.Vector2(math.cos(angle) * speed * dt, math.sin(angle)* dt * speed)
     def draw(self, screen, camera):
         screen_pos = camera.apply(self.pos)
@@ -44,6 +37,7 @@ class bullet:
             self.dircounter += 1
         self.move(self.speed, dt, self.acute_rad)        
         self.Rect = pygame.Rect(self.pos.x, self.pos.y, self.size, self.size)
+        self.velocity = pygame.Vector2(math.cos(self.acute_rad), math.sin(self.acute_rad))
     def Collision(self, obj2):
         if(self.Rect.colliderect(obj2.Rect)):
             return True
